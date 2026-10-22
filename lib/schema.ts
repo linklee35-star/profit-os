@@ -1,5 +1,7 @@
-import type { CountryConfig, ProfitInput } from "./types";
+import type { CountryConfig, PlatformId, ProfitInput } from "./types";
 import { getCountry } from "./countries";
+import { getPlatform } from "./platforms";
+import { getPlatformFees } from "./fees";
 import { D, round2 } from "./calculations";
 
 // ============================================================================
@@ -112,23 +114,28 @@ export function deriveLogistics(input: ProfitInput): ProfitInput {
   return input;
 }
 
-/** 用国家配置覆盖平台费用 / VAT / 汇率默认值 */
+/** 用国家配置 + 平台费率覆盖默认值（平台缺数据时保持内置默认） */
 export function applyCountryDefaults(
   input: ProfitInput,
   country: CountryConfig,
+  platformId: PlatformId = "tiktok-shop",
 ): ProfitInput {
+  const fees = getPlatformFees(platformId, country.code);
+  const platform = getPlatform(platformId);
+  const platformInput =
+    fees && platform.mapToInput ? platform.mapToInput(fees.values) : {};
   return {
     ...input,
-    commissionRate: country.platformFees.commission,
-    transactionRate: country.platformFees.transaction,
-    growthRate: country.platformFees.growth,
-    infrastructureFee: country.platformFees.infrastructure,
+    ...platformInput,
     vatRate: country.vat,
     rate: country.defaultRate,
   };
 }
 
-/** 初次构建：以默认输入 + 指定国家默认 */
-export function buildInitialInput(countryCode: CountryConfig["code"]): ProfitInput {
-  return applyCountryDefaults(DEFAULT_INPUT, getCountry(countryCode));
+/** 初次构建：以默认输入 + 指定国家/平台默认 */
+export function buildInitialInput(
+  countryCode: CountryConfig["code"],
+  platformId: PlatformId = "tiktok-shop",
+): ProfitInput {
+  return applyCountryDefaults(DEFAULT_INPUT, getCountry(countryCode), platformId);
 }

@@ -160,7 +160,7 @@ export interface ProfitResult {
   buyerTotalCost: number; // 买家应付总额（售价+VAT+关税）
 }
 
-/** 国家配置文件结构 */
+/** 国家配置文件结构（国家层 —— 与平台无关的参数） */
 export interface CountryConfig {
   code: CountryCode;
   name: string; // 中文名
@@ -170,15 +170,59 @@ export interface CountryConfig {
   currencySymbol: string; // 符号，如 ฿
   /** 默认 CNY → 该币种汇率 */
   defaultRate: number;
-  /** 平台费用默认值（%） */
-  platformFees: {
-    commission: number;
-    transaction: number;
-    growth: number;
-    infrastructure: number;
-  };
   /** VAT 默认值（%） */
   vat: number;
+}
+
+// ============================================================================
+// 四层架构：模型层 Model × 平台层 Platform × 国家层 Country × 数据层 FeeData
+//   - 模型层：电商利润 / 外贸报价（B2B，FOB/CIF/出口退税/关税）等计算模型
+//   - 平台层：每种平台一套费目 schema（TikTok Shop / Shopee / Lazada…）
+//   - 国家层：币种 / VAT / 汇率 / 关税框架（与平台无关）
+//   - 数据层：平台 × 国家的具体费率，必须带来源 + 生效日期
+// 新增市场 = 新增国家文件；新增平台 = 新增 schema + 各国数据；两者互不污染
+// ============================================================================
+
+/** 计算模型层 —— 电商利润模型 / 外贸报价模型（路线图） */
+export type ModelId = "ecommerce" | "foreign-trade";
+
+/** 平台代码（新增平台只需扩展联合类型 + 平台 schema 文件） */
+export type PlatformId = "tiktok-shop";
+
+/** 平台费目定义（schema 驱动：UI 按此渲染表单，引擎按此计算） */
+export interface PlatformFeeField {
+  key: string;
+  labelZh: string;
+  labelEn?: string;
+  /** percent = 百分比费率；fixed = 固定金额 */
+  unit: "percent" | "fixed";
+  /** price-based = 按售价百分比；per-order = 每单固定金额 */
+  formula: "price-based" | "per-order";
+  note?: string;
+}
+
+/** 平台 schema —— 每个平台一套费目结构 + 到模型输入字段的映射 */
+export interface PlatformFeeSchema {
+  id: PlatformId;
+  name: string;
+  /** 该平台属于哪个计算模型 */
+  model: ModelId;
+  feeFields: PlatformFeeField[];
+  /** 平台费目值 → 模型输入字段（模型层契约，各平台自行实现） */
+  mapToInput?: (values: Record<string, number>) => Partial<ProfitInput>;
+}
+
+/** 平台 × 国家 费率数据（数据层，必须带来源与生效日期，社区 PR 同规） */
+export interface PlatformCountryFees {
+  platform: PlatformId;
+  country: CountryCode;
+  /** 生效日期 YYYY-MM-DD */
+  effectiveFrom: string;
+  /** 数据来源（官方公告 / 第三方汇总，必须可追溯） */
+  source: string;
+  /** 费目值（key 对应 PlatformFeeSchema.feeFields[].key） */
+  values: Record<string, number>;
+  notes?: string;
 }
 
 /** SKU 成本库条目（含对比排行所需的轻量字段） */
