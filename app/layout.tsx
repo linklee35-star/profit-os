@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   title: "TikTok Shop SEA Profit OS · 跨境电商利润分析",
   description:
     "专业级东南亚跨境电商利润分析系统：真实利润、保本售价、保本 CPA / ROAS、定价与广告测算。关税 · 目标定价 · 双币种 · 最新费率。",
-  manifest: "/manifest.webmanifest",
+  manifest: "/profit-os/manifest.webmanifest",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
@@ -16,12 +16,12 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
-      { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
-      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/profit-os/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/profit-os/icon-512.png", sizes: "512x512", type: "image/png" },
+      { url: "/profit-os/icon.svg", type: "image/svg+xml" },
     ],
     apple: [
-      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/profit-os/icon-192.png", sizes: "192x192", type: "image/png" },
     ],
   },
 };

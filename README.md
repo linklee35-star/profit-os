@@ -10,7 +10,7 @@
 > 不只是计算器，而是跨境电商运营决策系统。
 > 第一阶段支持 **TikTok Shop 泰国站（THB）+ 越南站（VND）**，架构上已按 `模型 × 平台 × 国家 × 数据` 四层解耦——新增平台、新增市场、以及外贸报价模型（B2B），均无需改动核心引擎。
 
-🚧 **在线 Demo**：即将上线（Vercel 部署中）
+🌐 **在线 Demo（PWA，可安装）**：https://linklee35-star.github.io/profit-os
 
 ---
 
@@ -41,7 +41,7 @@
 | 精度 | decimal.js（避免浮点误差） |
 | 导出 | xlsx / jspdf / html-to-image（均动态 import） |
 | 存储 | LocalStorage |
-| 部署 | Vercel |
+| 部署 | GitHub Pages（纯静态导出 + PWA） |
 
 ---
 
@@ -72,7 +72,6 @@ app/
   sku-library/            SKU 成本库
   batch-test/            批量测品
   settings/              设置（汇率 / 国家 / 数据管理）
-  api/exchange-rate/     汇率代理（双源兜底）
 components/
   ui/                    shadcn 基础组件
   AppShell.tsx           侧边栏 + 顶栏（模式 / 国家 / 主题 / 汇率）
@@ -105,11 +104,11 @@ tests/                   Vitest 引擎单测
 # 1. 安装依赖
 npm install
 
-# 2. 启动开发服务器
+# 2. 启动开发服务器（注意 basePath 子路径）
 npm run dev
-# 打开 http://localhost:3000
+# 打开 http://localhost:3000/profit-os
 
-# 3. 生产构建
+# 3. 生产构建（静态导出 → out/）
 npm run build
 npm run start
 
@@ -121,23 +120,18 @@ npm test
 
 ---
 
-## ☁️ 部署到 Vercel
+## ☁️ 部署到 GitHub Pages
 
-### 方式一：Git 导入（推荐）
+本项目为**纯静态导出**（`output: "export"`，零服务端依赖），通过 GitHub Actions 自动部署：
+
 1. Fork 或 Clone 本仓库
-2. 在 Vercel 中 **New Project → Import** 该仓库
-3. Framework 选择 **Next.js**（自动识别），无需额外配置
-4. 点击 **Deploy**
+2. 仓库 **Settings → Pages → Source** 选择 **GitHub Actions**
+3. 推送即自动构建部署，地址：`https://<你的用户名>.github.io/profit-os/`
+4. 打开后浏览器可直接**安装为 PWA**（地址栏安装图标 / 移动端"添加到主屏幕"）
 
-### 方式二：CLI
-```bash
-npm i -g vercel
-vercel login
-vercel            # 按提示部署
-vercel --prod    # 生产环境
-```
+汇率通过 er-api / Frankfurter 双源在**浏览器直连**获取（两者均开放 CORS），带 10 分钟本地缓存与离线兜底，无需任何服务端与密钥。
 
-部署后默认即为生产构建；汇率功能通过自带 API Route（`/api/exchange-rate`）在服务端获取，无需配置密钥。
+> 本地开发时因 `basePath` 配置，地址为 http://localhost:3000/**profit-os**/
 
 ---
 
