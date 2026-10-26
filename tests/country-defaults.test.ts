@@ -88,6 +88,14 @@ describe("国家 × 平台 默认值接线", () => {
     expect(fees?.source.length).toBeGreaterThan(0);
   });
 
+  it("切换平台：Shopee 越南站佣金与交易手续费分列（不同于泰国合计口径）", () => {
+    const input = applyCountryDefaults(DEFAULT_INPUT, getCountry("VN"), "shopee");
+    expect(input.commissionRate).toBe(15.33); // 跨境直邮佣金
+    expect(input.transactionRate).toBe(6); // 交易手续费分列收取
+    expect(input.growthRate).toBe(0);
+    expect(input.infrastructureFee).toBe(0);
+  });
+
   it("费率数据注册表与 schema 双向一致", () => {
     // 每条数据都能在 schema 里找到对应平台，且 schema 的费目数据里都有值
     for (const f of feeData) {
