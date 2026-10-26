@@ -7,7 +7,7 @@
 export type Mode = "quick" | "real";
 
 /** 国家代码（新增国家只需扩展联合类型 + 国家配置文件） */
-export type CountryCode = "TH" | "VN";
+export type CountryCode = "TH" | "VN" | "MY";
 
 /** 汇率来源 */
 export type RateSource = "auto" | "custom";

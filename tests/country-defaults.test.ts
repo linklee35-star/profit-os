@@ -11,7 +11,7 @@ import type { CountryCode } from "../lib/types";
 
 describe("国家 × 平台 默认值接线", () => {
   it("每个已注册国家都有 tiktok-shop 费率数据", () => {
-    for (const code of ["TH", "VN"] as CountryCode[]) {
+    for (const code of ["TH", "VN", "MY"] as CountryCode[]) {
       const fees = getPlatformFees("tiktok-shop", code);
       expect(fees, `${code} 缺少费率数据`).toBeDefined();
       // 数据四规：来源 + 生效日期必须齐全（社区 PR 同规）
@@ -45,6 +45,17 @@ describe("国家 × 平台 默认值接线", () => {
     expect(input.vatRate).toBe(10);
     expect(input.rate).toBe(3500);
     expect(input.price).toBe(299000);
+  });
+
+  it("马来西亚默认值来自数据层（2026-06 费率）", () => {
+    const input = applyCountryDefaults(DEFAULT_INPUT, getCountry("MY"));
+    expect(input.commissionRate).toBe(9.7); // 非Mall 子类目区间中点
+    expect(input.transactionRate).toBe(4.32); // 2026-06 起（原 3.78%）
+    expect(input.growthRate).toBe(0); // 马来站无此项
+    expect(input.infrastructureFee).toBe(0.54); // 平台支持费 RM/单（含 SST）
+    expect(input.vatRate).toBe(0); // 不对售价征 VAT
+    expect(input.rate).toBe(0.6);
+    expect(input.price).toBe(59);
   });
 
   it("费率数据注册表与 schema 双向一致", () => {
