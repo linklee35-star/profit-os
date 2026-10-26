@@ -13,6 +13,7 @@ export const thailand: CountryConfig = {
   currency: "THB",
   currencySymbol: "฿",
   defaultRate: 5.0, // 1 CNY ≈ 5 THB（参考值，可手动/自动更新）
+  samplePrice: 299, // 示例售价 ฿299（泰国站常见客单价带）
   vat: 7.0, // 泰国 VAT 7%
 };
 

@@ -7,7 +7,7 @@
 export type Mode = "quick" | "real";
 
 /** 国家代码（新增国家只需扩展联合类型 + 国家配置文件） */
-export type CountryCode = "TH";
+export type CountryCode = "TH" | "VN";
 
 /** 汇率来源 */
 export type RateSource = "auto" | "custom";
@@ -170,6 +170,8 @@ export interface CountryConfig {
   currencySymbol: string; // 符号，如 ฿
   /** 默认 CNY → 该币种汇率 */
   defaultRate: number;
+  /** 示例售价（目标币种，用于新用户默认输入，如 TH 299 / VN 299000） */
+  samplePrice?: number;
   /** VAT 默认值（%） */
   vat: number;
 }

@@ -127,6 +127,7 @@ export function applyCountryDefaults(
   return {
     ...input,
     ...platformInput,
+    price: country.samplePrice ?? input.price,
     vatRate: country.vat,
     rate: country.defaultRate,
   };

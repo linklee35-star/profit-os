@@ -1,5 +1,6 @@
 import type { CountryCode, CountryConfig } from "@/lib/types";
 import { thailand } from "./thailand";
+import { vietnam } from "./vietnam";
 
 // ============================================================================
 // 国家注册表 —— 新增国家只需：
@@ -10,6 +11,7 @@ import { thailand } from "./thailand";
 
 const registry: Record<CountryCode, CountryConfig> = {
   TH: thailand,
+  VN: vietnam,
 };
 
 export const countries: CountryConfig[] = Object.values(registry);
