@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { CountryCode, Mode, RateProvider, RateSource } from "@/lib/types";
+import type { CountryCode, Mode, PlatformId, RateProvider, RateSource } from "@/lib/types";
 import { getCountry } from "@/lib/countries";
 import { applyCountryDefaults } from "@/lib/schema";
 import { useInputStore } from "./useInputStore";
@@ -8,6 +8,7 @@ import { useInputStore } from "./useInputStore";
 interface SettingsState {
   mode: Mode;
   countryCode: CountryCode;
+  platformId: PlatformId;
   rateSource: RateSource;
   rateProvider: RateProvider;
   manualRate: number;
@@ -15,6 +16,7 @@ interface SettingsState {
   autoRateUpdatedAt: string | null;
   setMode: (m: Mode) => void;
   setCountry: (c: CountryCode) => void;
+  setPlatform: (p: PlatformId) => void;
   setRateSource: (s: RateSource) => void;
   setRateProvider: (p: RateProvider) => void;
   setManualRate: (r: number) => void;
@@ -26,6 +28,7 @@ export const useSettingsStore = create<SettingsState>()(
     (set) => ({
       mode: "quick",
       countryCode: "TH",
+      platformId: "tiktok-shop",
       rateSource: "auto",
       rateProvider: "erapi",
       manualRate: 5.0,
@@ -37,9 +40,20 @@ export const useSettingsStore = create<SettingsState>()(
       // 切换国家：用该国默认值覆盖平台费用 / VAT / 汇率（核心引擎无需改动）
       setCountry: (countryCode) => {
         const country = getCountry(countryCode);
+        const platformId = useSettingsStore.getState().platformId;
         const cur = useInputStore.getState().data;
-        useInputStore.getState().setData(applyCountryDefaults(cur, country));
+        useInputStore.getState().setData(applyCountryDefaults(cur, country, platformId));
         set({ countryCode });
+      },
+
+      // 切换平台：按「新平台 × 当前国家」重新套用费率数据
+      setPlatform: (platformId) => {
+        const countryCode = useSettingsStore.getState().countryCode;
+        const cur = useInputStore.getState().data;
+        useInputStore
+          .getState()
+          .setData(applyCountryDefaults(cur, getCountry(countryCode), platformId));
+        set({ platformId });
       },
 
       setRateSource: (rateSource) => set({ rateSource }),
@@ -52,3 +66,4 @@ export const useSettingsStore = create<SettingsState>()(
 );
 
 export const currentCountry = () => getCountry(useSettingsStore.getState().countryCode);
+export const currentPlatform = () => useSettingsStore.getState().platformId;

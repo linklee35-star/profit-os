@@ -60,6 +60,12 @@ export interface ProfitInput {
   transactionRate: number; // 交易费 %
   growthRate: number; // 增长费 %
   infrastructureFee: number; // 基础设施费（固定，目标币种）
+  /**
+   * 平台费目原始值（schema 驱动 UI 写入，引擎不直接读）
+   * key 对应 PlatformFeeSchema.feeFields[].key；
+   * 用户改动费目时同步经 mapToInput 写入上面四个引擎字段
+   */
+  platformFeeValues?: Record<string, number>;
 
   // —— 达人合作 ——
   influencerCommissionRate: number; // 达人佣金 %
@@ -201,6 +207,8 @@ export interface PlatformFeeField {
   /** price-based = 按售价百分比；per-order = 每单固定金额 */
   formula: "price-based" | "per-order";
   note?: string;
+  /** 高级费目：快速估算模式下隐藏 */
+  advanced?: boolean;
 }
 
 /** 平台 schema —— 每个平台一套费目结构 + 到模型输入字段的映射 */

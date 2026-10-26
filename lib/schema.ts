@@ -127,6 +127,7 @@ export function applyCountryDefaults(
   return {
     ...input,
     ...platformInput,
+    platformFeeValues: fees ? { ...fees.values } : input.platformFeeValues,
     price: country.samplePrice ?? input.price,
     vatRate: country.vat,
     rate: country.defaultRate,

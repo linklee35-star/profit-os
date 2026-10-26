@@ -19,6 +19,7 @@ import { useInputStore } from "@/store/useInputStore";
 import { useSkuStore } from "@/store/useSkuStore";
 import { useEffectiveRate } from "@/hooks/useProfit";
 import { countries, getCountry } from "@/lib/countries";
+import { platforms } from "@/lib/platforms";
 import { formatRate } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { PwaRegister } from "@/components/PwaRegister";
@@ -113,6 +114,25 @@ function CountrySelect() {
   );
 }
 
+function PlatformSelect() {
+  const platformId = useSettingsStore((s) => s.platformId);
+  const setPlatform = useSettingsStore((s) => s.setPlatform);
+  return (
+    <Select value={platformId} onValueChange={(v) => setPlatform(v as typeof platformId)}>
+      <SelectTrigger className="h-8 w-[132px] text-xs" aria-label="平台">
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        {platforms.map((p) => (
+          <SelectItem key={p.id} value={p.id}>
+            {p.name}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+}
+
 function ThemeToggle() {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = React.useState(false);
@@ -195,6 +215,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </div>
           <ModeToggle />
           <CountrySelect />
+          <PlatformSelect />
           <div className="ml-auto flex items-center gap-2">
             <RateIndicator />
             <ThemeToggle />

@@ -58,6 +58,22 @@ describe("国家 × 平台 默认值接线", () => {
     expect(input.price).toBe(59);
   });
 
+  it("平台费目原始值随国家默认值写入（schema 驱动 UI 的数据源）", () => {
+    const th = applyCountryDefaults(DEFAULT_INPUT, getCountry("TH"));
+    expect(th.platformFeeValues).toMatchObject({
+      commission: 7.49,
+      transaction: 3.21,
+      growth: 8.03,
+      infrastructure: 1.07,
+    });
+    const my = applyCountryDefaults(DEFAULT_INPUT, getCountry("MY"));
+    expect(my.platformFeeValues?.commission).toBe(9.7);
+    // 原始值经 mapToInput 后与引擎槽位一致（两套数据不脱节）
+    const mapped = getPlatform("tiktok-shop").mapToInput!(my.platformFeeValues!);
+    expect(mapped.commissionRate).toBe(my.commissionRate);
+    expect(mapped.transactionRate).toBe(my.transactionRate);
+  });
+
   it("费率数据注册表与 schema 双向一致", () => {
     // 每条数据都能在 schema 里找到对应平台，且 schema 的费目数据里都有值
     for (const f of feeData) {

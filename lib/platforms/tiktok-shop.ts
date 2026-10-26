@@ -32,6 +32,7 @@ export const tiktokShop: PlatformFeeSchema = {
       labelEn: "Growth Service Fee",
       unit: "percent",
       formula: "price-based",
+      advanced: true,
     },
     {
       key: "infrastructure",
@@ -40,6 +41,7 @@ export const tiktokShop: PlatformFeeSchema = {
       unit: "fixed",
       formula: "per-order",
       note: "฿/单，含税",
+      advanced: true,
     },
   ],
   // 平台费目值 → 电商模型输入字段（模型层契约）

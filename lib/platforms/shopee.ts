@@ -35,6 +35,7 @@ export const shopee: PlatformFeeSchema = {
       unit: "percent",
       formula: "price-based",
       note: "部分站点/卖家类型收取（如免运计划服务费），默认 0",
+      advanced: true,
     },
   ],
   // 平台费目值 → 电商模型输入字段（模型层契约）
