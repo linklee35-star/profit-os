@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { applyCountryDefaults, DEFAULT_INPUT } from "../lib/schema";
 import { getCountry } from "../lib/countries";
 import { getPlatformFees, feeData } from "../lib/fees";
-import { getPlatform } from "../lib/platforms";
+import { getPlatform, platforms } from "../lib/platforms";
 import type { CountryCode } from "../lib/types";
 
 // ============================================================================
@@ -57,6 +57,22 @@ describe("国家 × 平台 默认值接线", () => {
           typeof f.values[field.key],
           `${f.platform}-${f.country} 缺少费目 ${field.key}`,
         ).toBe("number");
+      }
+    }
+  });
+
+  it("每个平台 schema 结构完整且映射可用", () => {
+    for (const platform of platforms) {
+      expect(platform.id.length).toBeGreaterThan(0);
+      expect(platform.model).toBe("ecommerce");
+      expect(platform.feeFields.length).toBeGreaterThan(0);
+      // 费目 key 唯一
+      const keys = platform.feeFields.map((f) => f.key);
+      expect(new Set(keys).size).toBe(keys.length);
+      // mapToInput 对空值也应可用（缺数据时不应抛错）
+      if (platform.mapToInput) {
+        const mapped = platform.mapToInput({});
+        expect(typeof mapped).toBe("object");
       }
     }
   });

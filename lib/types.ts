@@ -189,7 +189,7 @@ export interface CountryConfig {
 export type ModelId = "ecommerce" | "foreign-trade";
 
 /** 平台代码（新增平台只需扩展联合类型 + 平台 schema 文件） */
-export type PlatformId = "tiktok-shop";
+export type PlatformId = "tiktok-shop" | "shopee";
 
 /** 平台费目定义（schema 驱动：UI 按此渲染表单，引擎按此计算） */
 export interface PlatformFeeField {
