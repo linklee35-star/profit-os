@@ -12,6 +12,9 @@
 
 🌐 **在线 Demo（PWA，可安装）**：https://linklee35-star.github.io/profit-os
 
+> 🚀 **想用自己的实例？** Fork 本仓库 → **Settings → Pages → Source 选 `GitHub Actions`** → 1 分钟后你的专属地址上线（`https://<你的用户名>.github.io/profit-os`）。
+> 数据全在浏览器本地（LocalStorage），不经过任何服务器，部署零成本。
+
 ---
 
 ## ✨ 功能一览
