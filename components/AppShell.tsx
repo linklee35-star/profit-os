@@ -24,6 +24,8 @@ import { formatRate } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { PwaRegister } from "@/components/PwaRegister";
 import { InstallBanner } from "@/components/InstallBanner";
+import { ShareButton } from "@/components/ShareButton";
+import { decodeShareState, readShareToken, stripShareParam } from "@/lib/share";
 import {
   Select,
   SelectContent,
@@ -179,9 +181,24 @@ function RateIndicator() {
 export function AppShell({ children }: { children: React.ReactNode }) {
   // 首屏用默认值渲染（与服务端一致），挂载后再从 LocalStorage 恢复，避免 hydration 不匹配
   React.useEffect(() => {
-    useInputStore.persist.rehydrate();
-    useSettingsStore.persist.rehydrate();
-    useSkuStore.persist.rehydrate();
+    Promise.resolve(useInputStore.persist.rehydrate())
+      .then(() =>
+        Promise.all([
+          useSettingsStore.persist.rehydrate(),
+          useSkuStore.persist.rehydrate(),
+        ]),
+      )
+      .then(() => {
+        // 分享链接优先于本地存储：对方点开链接应该看到链接里的数字
+        const decoded = decodeShareState(readShareToken(window.location.search));
+        if (!decoded) return;
+        const settings = useSettingsStore.getState();
+        settings.setPlatform(decoded.platformId);
+        settings.setCountry(decoded.countryCode);
+        useInputStore.getState().setData(decoded.data);
+        // 应用后清掉地址栏参数，否则用户改完数字一刷新又被链接覆盖
+        window.history.replaceState({}, "", stripShareParam(window.location.href));
+      });
   }, []);
 
   return (
@@ -218,6 +235,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <PlatformSelect />
           <div className="ml-auto flex items-center gap-2">
             <RateIndicator />
+            <ShareButton />
             <ThemeToggle />
           </div>
         </header>
