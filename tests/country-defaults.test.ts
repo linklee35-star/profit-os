@@ -74,6 +74,20 @@ describe("国家 × 平台 默认值接线", () => {
     expect(mapped.transactionRate).toBe(my.transactionRate);
   });
 
+  it("切换平台：Shopee 泰国站使用合计费率且不重复计费", () => {
+    const input = applyCountryDefaults(DEFAULT_INPUT, getCountry("TH"), "shopee");
+    // 22.47% 为「含平台佣金与交易手续费」的合计费率
+    expect(input.commissionRate).toBe(22.47);
+    expect(input.transactionRate).toBe(0); // 已含在佣金内
+    expect(input.growthRate).toBe(0);
+    expect(input.infrastructureFee).toBe(0);
+    expect(input.platformFeeValues?.commission).toBe(22.47);
+    // 数据四规
+    const fees = getPlatformFees("shopee", "TH");
+    expect(fees?.effectiveFrom).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    expect(fees?.source.length).toBeGreaterThan(0);
+  });
+
   it("费率数据注册表与 schema 双向一致", () => {
     // 每条数据都能在 schema 里找到对应平台，且 schema 的费目数据里都有值
     for (const f of feeData) {
