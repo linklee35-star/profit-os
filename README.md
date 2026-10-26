@@ -1,9 +1,16 @@
 # TikTok Shop SEA Profit OS
 
+[![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0.html)
+[![CI](https://github.com/linklee35-star/profit-os/actions/workflows/ci.yml/badge.svg)](https://github.com/linklee35-star/profit-os/actions/workflows/ci.yml)
+[![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue.svg)](https://www.typescriptlang.org/)
+[![Tests](https://img.shields.io/badge/tests-vitest-green.svg)](./tests)
+
 东南亚跨境电商利润分析系统 —— 帮助 TikTok Shop 卖家精确计算**真实利润、利润率、保本售价、保本 CPA、保本 ROAS**，并提供定价、广告、达人合作与成本管理决策工具。
 
 > 不只是计算器，而是跨境电商运营决策系统。
-> 第一阶段支持 **TikTok Shop 泰国站（THB）**，国家配置化，未来新增站点零重构。
+> 第一阶段支持 **TikTok Shop 泰国站（THB）**，架构上已按 `模型 × 平台 × 国家 × 数据` 四层解耦——新增平台、新增市场、以及外贸报价模型（B2B），均无需改动核心引擎。
+
+🚧 **在线 Demo**：即将上线（Vercel 部署中）
 
 ---
 
@@ -38,6 +45,24 @@
 
 ---
 
+## 🏗 架构：四层解耦
+
+```
+模型层 Model      电商利润模型 ｜ 外贸报价模型（规划中：FOB/CIF/出口退税/关税）
+平台层 Platform   TikTok Shop ｜ Shopee / Lazada（规划中）
+国家层 Country    币种 / VAT / 汇率 / 关税框架（与平台无关）
+数据层 FeeData    平台 × 国家 的具体费率，全部带来源 + 生效日期
+```
+
+| 扩展方向 | 动作 | 引擎改动 |
+|---|---|---|
+| 新国家 | `lib/countries/<country>.ts` 注册 | 无 |
+| 新平台 | `lib/platforms/<platform>.ts`（schema） | 无 |
+| 新费率数据 | `lib/fees/<platform>-<country>.ts`（带来源+日期） | 无 |
+| 新计算模型 | 模型层新增（外贸报价等） | 引擎内新增模型，存量模型不动 |
+
+---
+
 ## 📁 目录结构
 
 ```
@@ -60,8 +85,10 @@ lib/
   pricing-engine.ts      保本点 / 利润率 / ROI / 健康度
   calculations.ts        定点运算工具（decimal.js）
   exchange-rate.ts       汇率客户端
-  countries/             国家配置（新增国家只加文件）
-  schema.ts              默认输入 + 国家默认值应用
+  countries/             国家层配置（新增国家只加文件）
+  platforms/             平台层 schema（新增平台只加文件）
+  fees/                  数据层费率（平台 × 国家，带来源 + 生效日期）
+  schema.ts              默认输入 + 国家/平台默认值应用
   batch.ts               批量测品计算
   exporters.ts           Excel / PDF / PNG 导出
   storage.ts / format.ts / sample.ts / types.ts / utils.ts
@@ -97,7 +124,7 @@ npm test
 ## ☁️ 部署到 Vercel
 
 ### 方式一：Git 导入（推荐）
-1. 将本项目推送到 GitHub / GitLab
+1. Fork 或 Clone 本仓库
 2. 在 Vercel 中 **New Project → Import** 该仓库
 3. Framework 选择 **Next.js**（自动识别），无需额外配置
 4. 点击 **Deploy**
@@ -114,14 +141,34 @@ vercel --prod    # 生产环境
 
 ---
 
-## 🌏 扩展新国家（零重构核心引擎）
+## 🌏 扩展指南（零重构核心引擎）
 
-只需两步：
+**新增国家**：`lib/countries/<country>.ts` 导出 `CountryConfig`（币种、VAT、默认汇率）→ 在 `lib/countries/index.ts` 注册。
 
-1. 新建 `lib/countries/<country>.ts`，导出 `CountryConfig`（佣金、交易费、增长费、VAT、默认汇率等）
-2. 在 `lib/countries/index.ts` 的 `registry` 中 `import` 并注册
+**新增平台**：`lib/platforms/<platform>.ts` 定义费目 schema 与输入映射 → 在 `lib/platforms/index.ts` 注册。
 
-`profit-engine` / `fee-engine` / `pricing-engine` **完全不用改动**。顶栏即可切换国家，平台费用与 VAT 自动套用该国默认值。
+**新增费率数据**：`lib/fees/<platform>-<country>.ts` 导出 `PlatformCountryFees` → 在 `lib/fees/index.ts` 注册。
+
+以上三类扩展，`profit-engine` / `fee-engine` / `pricing-engine` **完全不用改动**。
+
+### 📐 费率数据规范（社区 PR 硬性要求）
+
+费率是这个产品的生命线。每一份数据必须：
+
+1. **带来源**：官方公告链接或可追溯的第三方汇总（写进 `source`）
+2. **带生效日期**：YYYY-MM-DD（写进 `effectiveFrom`）
+3. **变更留痕**：调价时旧值写入 `notes`，不静默覆盖
+4. **区分类目**：如 TikTok 的 Mall / 非 Mall / 电子类目费率不同，默认采用非 Mall 通用类目并在 `notes` 说明
+
+---
+
+## 🗺 路线图
+
+- [ ] **多平台**：Shopee / Lazada / 阿里国际站
+- [ ] **多市场**：越南 / 马来西亚 / 菲律宾 / 印尼 / 新加坡
+- [ ] **外贸报价模型（B2B）**：FOB / CIF 报价、出口退税（按 HS 编码退税率）、进口关税、拼柜/整柜、锁汇
+- [ ] 费率数据自动更新与变更通知
+- [ ] 多设备同步 / 团队协作（账号体系）
 
 ---
 
@@ -162,5 +209,20 @@ ROI             = 净利润 ÷ 总成本 × 100
 
 - TypeScript `strict` 模式
 - 计算引擎 Vitest 单测（`tests/profit-engine.test.ts`，覆盖基础 / 亏损 / 健康度 / 分摊 / 汇率换算等场景）
+- GitHub Actions CI（每次推送自动跑类型检查 + 单测）
 - 重库（xlsx / jspdf / html-to-image / recharts）全部动态加载，保障首屏性能
 - 所有数据本地持久化，刷新自动恢复
+
+---
+
+## 🤝 贡献
+
+欢迎 Issue 和 PR！尤其是：
+
+- **费率数据修正/新增**（请遵守上方数据规范——这是对产品最大的贡献）
+- 新国家 / 新平台的配置
+- Bug 修复与体验优化
+
+## 📄 License
+
+[AGPL-3.0](./LICENSE) —— 你可以自由使用、修改和分发本软件；基于它提供网络服务时，必须以相同许可证开源你的修改。

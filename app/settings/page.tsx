@@ -7,6 +7,7 @@ import { useInputStore } from "@/store/useInputStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { useSkuStore } from "@/store/useSkuStore";
 import { getCountry, countries } from "@/lib/countries";
+import { getPlatformFees } from "@/lib/fees";
 import { downloadText, pickFile, readFileText } from "@/lib/storage";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -110,7 +111,10 @@ export default function SettingsPage() {
                   {c.flag} {c.name}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  佣金 {c.platformFees.commission}% · VAT {c.vat}% · 默认汇率 {c.defaultRate}
+                  {(() => {
+                    const fees = getPlatformFees("tiktok-shop", c.code);
+                    return `佣金 ${fees ? fees.values.commission : "—"}% · VAT ${c.vat}% · 默认汇率 ${c.defaultRate}`;
+                  })()}
                 </p>
               </div>
             ))}
