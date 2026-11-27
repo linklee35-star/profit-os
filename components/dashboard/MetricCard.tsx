@@ -25,13 +25,20 @@ const toneClass: Record<NonNullable<MetricCardProps["tone"]>, string> = {
 export function MetricCard({ label, value, format, hint, tone = "default", emphasize }: MetricCardProps) {
   const animated = useCountUp(value);
   return (
-    <Card className={cn("animate-fade-in", emphasize && "border-primary/30 bg-primary/5")}>
+    <Card className={cn("animate-fade-in min-w-0", emphasize && "border-primary/30 bg-primary/5")}>
       <CardContent className="p-4">
         <p className="text-xs font-medium text-muted-foreground">{label}</p>
-        <p className={cn("mt-1 tabular-nums font-semibold", emphasize ? "text-2xl" : "text-xl", toneClass[tone])}>
+        <p
+          className={cn(
+            "mt-1 tabular-nums font-semibold break-words leading-tight",
+            emphasize ? "text-xl sm:text-2xl" : "text-lg sm:text-xl",
+            toneClass[tone],
+          )}
+          title={format(animated)}
+        >
           {format(animated)}
         </p>
-        {hint ? <p className="mt-1 text-[11px] text-muted-foreground">{hint}</p> : null}
+        {hint ? <p className="mt-1 text-[11px] break-words text-muted-foreground">{hint}</p> : null}
       </CardContent>
     </Card>
   );

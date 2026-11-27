@@ -17,6 +17,9 @@ export const malaysia: CountryConfig = {
   // 马来西亚不对售价征 VAT：SST 8% 只作用于平台服务费（已含在费率内），
   // 低价值商品税（LVG 10%，RM500 以下）由平台向买家代收，卖家侧不计
   vat: 0,
+  taxName: "SST",
+  taxNote: "马来不对售价征 VAT：SST 8% 作用于平台服务费，已含在费率内",
+  dutyNote: "低价值商品税由平台代收，卖家侧不计",
 };
 
 export default malaysia;

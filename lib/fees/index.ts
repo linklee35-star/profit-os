@@ -4,6 +4,7 @@ import { tiktokShopVN } from "./tiktok-shop-vn";
 import { tiktokShopMY } from "./tiktok-shop-my";
 import { shopeeTH } from "./shopee-th";
 import { shopeeVN } from "./shopee-vn";
+import { amazonUS } from "./amazon-us";
 
 // ============================================================================
 // 费率数据注册表 —— 新增「平台 × 国家」只需：
@@ -17,6 +18,7 @@ const registry: PlatformCountryFees[] = [
   tiktokShopMY,
   shopeeTH,
   shopeeVN,
+  amazonUS,
 ];
 
 /** 取某平台在某国的费率数据（无数据返回 undefined，调用方负责兜底） */

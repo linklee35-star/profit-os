@@ -7,7 +7,7 @@
 export type Mode = "quick" | "real";
 
 /** 国家代码（新增国家只需扩展联合类型 + 国家配置文件） */
-export type CountryCode = "TH" | "VN" | "MY";
+export type CountryCode = "TH" | "VN" | "MY" | "US";
 
 /** 汇率来源 */
 export type RateSource = "auto" | "custom";
@@ -180,6 +180,22 @@ export interface CountryConfig {
   samplePrice?: number;
   /** VAT 默认值（%） */
   vat: number;
+  /** 税种名称：泰国/越南=增值税 VAT，美国=销售税 Sales Tax，马来=SST */
+  taxName?: string;
+  /** 税务计算说明（展示用，取代写死的「泰国 VAT 7%」） */
+  taxNote?: string;
+  /** 进口关税说明（展示用，取代写死的「2026年起取消免税额度」） */
+  dutyNote?: string;
+  /** 该国进口关税品类预设（缺省时只有「自定义」，避免套用他国税率） */
+  dutyPresets?: DutyPreset[];
+}
+
+/** 进口关税品类预设 */
+export interface DutyPreset {
+  id: DutyCategory;
+  label: string;
+  rate: number;
+  desc: string;
 }
 
 // ============================================================================
@@ -195,7 +211,7 @@ export interface CountryConfig {
 export type ModelId = "ecommerce" | "foreign-trade";
 
 /** 平台代码（新增平台只需扩展联合类型 + 平台 schema 文件） */
-export type PlatformId = "tiktok-shop" | "shopee";
+export type PlatformId = "tiktok-shop" | "shopee" | "amazon";
 
 /** 平台费目定义（schema 驱动：UI 按此渲染表单，引擎按此计算） */
 export interface PlatformFeeField {
@@ -289,11 +305,19 @@ export interface RateResponse {
   updatedAt: string; // ISO 时间
 }
 
-/** 泰国进口关税品类预设（2026年1月起，CIF价值×税率） */
-export const DUTY_PRESETS: { id: DutyCategory; label: string; rate: number; desc: string }[] = [
+/** 泰国进口关税品类预设（2026年1月起，CIF价值×税率）—— 仅泰国数据层使用 */
+export const DUTY_PRESETS_TH: DutyPreset[] = [
   { id: "general", label: "通用商品", rate: 10, desc: "最低进口关税率" },
   { id: "electronics", label: "电器/电子产品", rate: 10, desc: "电子产品 10%" },
   { id: "bags", label: "包袋/配饰", rate: 20, desc: "箱包配饰 20%" },
   { id: "fashion", label: "时尚/服饰/鞋", rate: 30, desc: "时尚服饰鞋履最高 30%" },
+  { id: "custom", label: "自定义", rate: 0, desc: "手动输入税率" },
+];
+
+/** 兼容旧引用：其他国家请用各自国家配置的 dutyPresets */
+export const DUTY_PRESETS = DUTY_PRESETS_TH;
+
+/** 无当地关税预设时的兜底：只有自定义，杜绝把他国税率套到本国 */
+export const DUTY_PRESETS_CUSTOM_ONLY: DutyPreset[] = [
   { id: "custom", label: "自定义", rate: 0, desc: "手动输入税率" },
 ];

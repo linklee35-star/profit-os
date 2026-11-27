@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { CountryCode, Mode, PlatformId, RateProvider, RateSource } from "@/lib/types";
 import { getCountry } from "@/lib/countries";
+import { getPlatformsForCountry } from "@/lib/fees";
 import { applyCountryDefaults } from "@/lib/schema";
 import { useInputStore } from "./useInputStore";
 
@@ -38,12 +39,15 @@ export const useSettingsStore = create<SettingsState>()(
       setMode: (mode) => set({ mode }),
 
       // 切换国家：用该国默认值覆盖平台费用 / VAT / 汇率（核心引擎无需改动）
+      // 若新国家没有当前平台的费率数据，自动切到该国首个可用平台，避免套用错误默认值
       setCountry: (countryCode) => {
         const country = getCountry(countryCode);
-        const platformId = useSettingsStore.getState().platformId;
+        const available = getPlatformsForCountry(countryCode);
+        const current = useSettingsStore.getState().platformId;
+        const platformId = available.includes(current) ? current : available[0] ?? current;
         const cur = useInputStore.getState().data;
         useInputStore.getState().setData(applyCountryDefaults(cur, country, platformId));
-        set({ countryCode });
+        set({ countryCode, platformId });
       },
 
       // 切换平台：按「新平台 × 当前国家」重新套用费率数据

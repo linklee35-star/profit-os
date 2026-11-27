@@ -1,6 +1,7 @@
 import type { PlatformFeeSchema, PlatformId } from "../types";
 import { tiktokShop } from "./tiktok-shop";
 import { shopee } from "./shopee";
+import { amazon } from "./amazon";
 
 // ============================================================================
 // 平台注册表 —— 新增平台只需：
@@ -12,6 +13,7 @@ import { shopee } from "./shopee";
 const registry: Record<PlatformId, PlatformFeeSchema> = {
   "tiktok-shop": tiktokShop,
   shopee,
+  amazon,
 };
 
 export const platforms: PlatformFeeSchema[] = Object.values(registry);

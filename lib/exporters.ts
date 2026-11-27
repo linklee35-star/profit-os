@@ -4,7 +4,11 @@ import type { BatchResult } from "./types";
 // 不进入首屏包，保证 Lighthouse 性能。
 
 /** 批量结果导出为 Excel（动态加载 xlsx），净利润/利润率/ROI 带红绿条件格式 */
-export async function exportBatchExcel(rows: BatchResult[], filename = "测品结果.xlsx") {
+export async function exportBatchExcel(
+  rows: BatchResult[],
+  filename = "测品结果.xlsx",
+  currency = "THB",
+) {
   const XLSX = await import("xlsx");
   const data = rows.map((r) => ({
     SKU: r.sku,
@@ -14,7 +18,7 @@ export async function exportBatchExcel(rows: BatchResult[], filename = "测品�
     售价: r.price,
     CPA: r.cpa,
     达人佣金率: r.influencerCommissionRate,
-    商品成本THB: r.productCostTHB,
+    [`商品成本(${currency})`]: r.productCostTHB,
     净利润: r.netProfit,
     利润率: r.profitMargin,
     ROI: r.roi,

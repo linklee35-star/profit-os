@@ -74,7 +74,7 @@ export function TargetPriceModule() {
             建议售价 {formatMoney(r.suggestedPrice, sym)}
           </p>
           <p className="text-[11px] text-muted-foreground">
-            ≈ ¥{formatMoney(r.suggestedPrice / rate, "¥")}
+            ≈ {formatMoney(r.suggestedPrice / rate, "¥")}
           </p>
         </div>
       ) : null}

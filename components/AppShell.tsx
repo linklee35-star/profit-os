@@ -19,7 +19,8 @@ import { useInputStore } from "@/store/useInputStore";
 import { useSkuStore } from "@/store/useSkuStore";
 import { useEffectiveRate } from "@/hooks/useProfit";
 import { countries, getCountry } from "@/lib/countries";
-import { platforms } from "@/lib/platforms";
+import { getPlatformsForCountry } from "@/lib/fees";
+import { getPlatform } from "@/lib/platforms";
 import { formatRate } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { PwaRegister } from "@/components/PwaRegister";
@@ -118,14 +119,17 @@ function CountrySelect() {
 
 function PlatformSelect() {
   const platformId = useSettingsStore((s) => s.platformId);
+  const countryCode = useSettingsStore((s) => s.countryCode);
   const setPlatform = useSettingsStore((s) => s.setPlatform);
+  // 只列出当前国家有费率数据的平台（如美国→Amazon，泰国→TikTok Shop/Shopee）
+  const available = getPlatformsForCountry(countryCode).map((id) => getPlatform(id));
   return (
     <Select value={platformId} onValueChange={(v) => setPlatform(v as typeof platformId)}>
       <SelectTrigger className="h-8 w-[132px] text-xs" aria-label="平台">
         <SelectValue />
       </SelectTrigger>
       <SelectContent>
-        {platforms.map((p) => (
+        {available.map((p) => (
           <SelectItem key={p.id} value={p.id}>
             {p.name}
           </SelectItem>
@@ -213,7 +217,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </div>
           <div className="leading-tight">
             <p className="text-sm font-semibold">Profit OS</p>
-            <p className="text-[10px] text-muted-foreground">TikTok Shop SEA</p>
+            <p className="text-[10px] text-muted-foreground">跨境电商利润分析</p>
           </div>
         </div>
         <NavLinks />

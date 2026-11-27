@@ -15,6 +15,9 @@ export const vietnam: CountryConfig = {
   defaultRate: 3500, // 1 CNY ≈ 3,500 VND（参考值，可手动/自动更新）
   samplePrice: 299000, // 示例售价 ₫299,000（约 ¥85，越南站常见客单价带）
   vat: 10, // 越南标准 VAT 10%（2024-2026H1 曾执行 8% 优惠税率，以最新政策为准）
+  taxName: "VAT",
+  taxNote: "越南标准 VAT 10%，如售价已含税则不重复扣减",
+  dutyNote: "进口关税按 CIF 价值 × 品类税率计算",
 };
 
 export default vietnam;

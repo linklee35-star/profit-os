@@ -7,10 +7,12 @@ import { useSettingsStore } from "@/store/useSettingsStore";
 import { useInputStore } from "@/store/useInputStore";
 import { useProfit, useEffectiveRate } from "@/hooks/useProfit";
 import { getCountry } from "@/lib/countries";
+import { getPlatform } from "@/lib/platforms";
 import { formatMoney, formatNumber } from "@/lib/format";
 
 export function SalesModule() {
   const country = getCountry(useSettingsStore((s) => s.countryCode));
+  const platform = getPlatform(useSettingsStore((s) => s.platformId));
   const sym = country.currencySymbol;
   const data = useInputStore((s) => s.data);
   const setField = useInputStore((s) => s.setField);
@@ -26,7 +28,7 @@ export function SalesModule() {
   return (
     <ModuleCard
       title="销售"
-      description={`商品在 TikTok Shop 上的售卖价格（${sym}）`}
+      description={`商品在 ${platform.name} 上的售卖价格（${sym}）`}
       icon={<Tag className="h-4 w-4" />}
     >
       <NumberField

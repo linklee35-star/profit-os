@@ -64,7 +64,7 @@ export default function BatchTestPage() {
               </span>
             </Button>
           </label>
-          <Button size="sm" onClick={() => exportBatchExcel(results)}>
+          <Button size="sm" onClick={() => exportBatchExcel(results, "测品结果.xlsx", country.currency)}>
             <FileSpreadsheet className="h-4 w-4" /> 导出 Excel
           </Button>
         </div>

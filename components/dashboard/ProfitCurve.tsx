@@ -57,9 +57,16 @@ export default function ProfitCurve() {
           width={52}
         />
         <Tooltip
-          formatter={(v: number) => formatMoney(v, sym)}
+          formatter={(v: number) => [formatMoney(v, sym), "净利润"]}
           labelFormatter={(l) => `售价 ${formatMoney(Number(l), sym)}`}
-          contentStyle={{ borderRadius: 8, border: "1px solid hsl(var(--border))" }}
+          contentStyle={{
+            borderRadius: 8,
+            border: "1px solid hsl(var(--border))",
+            background: "hsl(var(--popover))",
+            color: "hsl(var(--popover-foreground))",
+          }}
+          labelStyle={{ color: "hsl(var(--muted-foreground))" }}
+          itemStyle={{ color: "hsl(var(--popover-foreground))" }}
         />
         <ReferenceLine y={0} stroke="hsl(var(--muted-foreground))" />
         <ReferenceLine
