@@ -44,7 +44,7 @@ export function ModuleCard({
     <Card className={cn("animate-fade-in", className)}>
       <CardHeader className="pb-3">
         <div className="flex items-center gap-2">
-          {icon ? <span className="text-primary">{icon}</span> : null}
+          {icon ? <span className="rounded-md bg-accent p-1.5 text-accent-foreground" aria-hidden="true">{icon}</span> : null}
           <CardTitle className="text-base">{title}</CardTitle>
           {advanced ? (
             <span className="rounded-full bg-secondary px-2 py-0.5 text-[10px] font-medium text-muted-foreground">

@@ -1,69 +1,36 @@
 "use client";
 
-import * as React from "react";
+import { Card } from "@/components/ui/card";
 import { useProfit, useEffectiveRate } from "@/hooks/useProfit";
-import { useSettingsStore } from "@/store/useSettingsStore";
-import { useInputStore } from "@/store/useInputStore";
 import { getCountry } from "@/lib/countries";
-import { formatNumber, formatPercent, formatThbWithRmb } from "@/lib/format";
+import { formatMoney, formatNumber, formatPercent } from "@/lib/format";
+import { useSettingsStore } from "@/store/useSettingsStore";
+import { HealthBanner } from "./HealthBanner";
 import { MetricCard } from "./MetricCard";
 
 export function MetricGrid() {
-  const r = useProfit();
-  const data = useInputStore((s) => s.data);
-  const country = getCountry(useSettingsStore((s) => s.countryCode));
-  const sym = country.currencySymbol;
+  const result = useProfit();
+  const country = getCountry(useSettingsStore((state) => state.countryCode));
   const rate = useEffectiveRate();
-  const thb = (n: number) => formatThbWithRmb(n, rate, sym);
-
-  const hasTarget =
-    (data.targetPricingMode === "profit" && data.targetProfit > 0) ||
-    (data.targetPricingMode === "margin" && data.targetMargin > 0);
+  const money = (n: number) => formatMoney(n, country.currencySymbol);
+  const cny = (n: number) => `≈ ${formatMoney(rate > 0 ? n / rate : 0, "¥")}`;
+  const hasSuggestion = result.suggestedPrice > 0;
+  const canCoverAds = result.breakEvenCPA > 0;
 
   return (
-    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-      <MetricCard
-        label="单件净利润"
-        value={r.netProfit}
-        format={thb}
-        emphasize
-        tone={r.netProfit >= 0 ? "success" : "danger"}
-        hint="售价 − 全部成本"
-      />
-      <MetricCard
-        label="利润率"
-        value={r.profitMargin}
-        format={(n) => formatPercent(n)}
-        emphasize
-        tone={r.health === "danger" ? "danger" : r.health === "warning" ? "warning" : "success"}
-        hint="净利润 ÷ 售价"
-      />
-      <MetricCard
-        label="ROI"
-        value={r.roi}
-        format={(n) => formatPercent(n)}
-        emphasize
-        tone="primary"
-        hint="净利润 ÷ 总成本"
-      />
-
-      {hasTarget && r.suggestedPrice > 0 ? (
-        <MetricCard
-          label="建议售价"
-          value={r.suggestedPrice}
-          format={thb}
-          emphasize
-          tone="success"
-          hint={data.targetPricingMode === "profit" ? `目标净利 ${formatThbWithRmb(data.targetProfit, rate, sym)}` : `目标利润率 ${formatPercent(data.targetMargin, 0)}`}
-        />
-      ) : (
-        <MetricCard label="保本售价" value={r.breakEvenPrice} format={thb} hint="覆盖全部成本的最低售价" />
-      )}
-
-      <MetricCard label="保本 CPA" value={r.breakEvenCPA} format={thb} hint="广告可承受上限" />
-      <MetricCard label="保本 ROAS" value={r.breakEvenROAS} format={(n) => `${formatNumber(n)}x`} hint="售价 ÷ 保本CPA" />
-
-      <MetricCard label="总成本" value={r.totalCost} format={thb} emphasize />
-    </div>
+    <Card className="overflow-hidden border-primary/20">
+      <dl className="grid grid-cols-[minmax(0,1.75fr)_minmax(0,1fr)] bg-accent/60">
+        <MetricCard label="单件净利润" value={result.netProfit} format={money} secondary={cny} emphasize tone={result.netProfit >= 0 ? "success" : "danger"} className="row-span-2 self-center px-4 py-5 sm:px-5" />
+        <MetricCard label="利润率" value={result.profitMargin} format={formatPercent} className="border-l border-border" />
+        <MetricCard label="ROI" value={result.roi} format={formatPercent} className="border-l border-t border-border" />
+      </dl>
+      <dl className="grid grid-cols-2 gap-px border-t border-border bg-border [&>div]:bg-card">
+        <MetricCard label={hasSuggestion ? "建议售价" : "保本售价"} value={hasSuggestion ? result.suggestedPrice : result.breakEvenPrice} format={money} secondary={cny} tone={hasSuggestion ? "primary" : "default"} />
+        <MetricCard label="总成本" value={result.totalCost} format={money} secondary={cny} />
+        <MetricCard label="保本 CPA" value={result.breakEvenCPA} format={result.breakEvenCPA < 0 ? () => "无法保本" : money} secondary={result.breakEvenCPA >= 0 ? cny : undefined} hint={result.breakEvenCPA < 0 ? "当前售价下，广告费为零仍亏损" : undefined} />
+        <MetricCard label="保本 ROAS" value={result.breakEvenROAS} format={canCoverAds ? (n) => `${formatNumber(n)}×` : () => "—"} />
+      </dl>
+      <HealthBanner health={result.health} />
+    </Card>
   );
 }

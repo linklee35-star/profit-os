@@ -15,7 +15,7 @@ import { getCountry } from "@/lib/countries";
 import { formatMoney } from "@/lib/format";
 
 const COLOR: Record<string, string> = {
-  商品成本: "#5c8272",
+  商品成本: "#4c82ce",
   平台费用: "#738791",
   广告费用: "#b3915d",
   达人费用: "#a97880",
@@ -42,25 +42,25 @@ export default function PriceBreakdown() {
   const r = useProfit();
   const country = getCountry(useSettingsStore((s) => s.countryCode));
   const sym = country.currencySymbol;
-  const b = r.breakdown;
 
-  const row: Record<string, string | number> = { name: "售价" };
-  ORDER.forEach((k) => {
-    row[k] = b[k as keyof typeof b] as number;
+  const costKeys = ["productCost", "platformFee", "adCost", "influencerFee", "taxCost", "logisticsLoss", "receivingCost", "warehouseCost", "teamCost"] as const;
+  const row: Record<string, string | number> = { name: "单件测算" };
+  ORDER.forEach((label, index) => {
+    row[label] = r.breakdown[costKeys[index]];
   });
-  row["净利润"] = Math.max(0, r.netProfit);
+  row["净利润"] = r.netProfit;
   const data = [row];
 
   return (
     <div className="space-y-2">
       <ResponsiveContainer width="100%" height={64}>
-        <BarChart layout="vertical" data={data} margin={{ left: 0, right: 8, top: 4, bottom: 4 }}>
+        <BarChart layout="vertical" stackOffset="sign" data={data} margin={{ left: 0, right: 8, top: 4, bottom: 4 }}>
           <XAxis type="number" hide />
           <YAxis type="category" dataKey="name" hide />
           <Tooltip
             formatter={(v: number, n: string) => [formatMoney(v, sym), n]}
             cursor={false}
-            contentStyle={{ borderRadius: 8, border: "1px solid hsl(var(--border))" }}
+            contentStyle={{ borderRadius: 10, border: "1px solid hsl(var(--border))", background: "hsl(var(--popover))", color: "hsl(var(--popover-foreground))" }}
           />
           {ORDER.map((k) => (
             <Bar key={k} dataKey={k} stackId="a" fill={COLOR[k]} />

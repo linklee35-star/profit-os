@@ -12,7 +12,7 @@ import type { CostBreakdown } from "@/lib/types";
 type BreakdownKey = keyof CostBreakdown;
 
 const ITEMS: { key: BreakdownKey; label: string; color: string }[] = [
-  { key: "productCost", label: "商品成本", color: "#5c8272" },
+  { key: "productCost", label: "商品成本", color: "#4c82ce" },
   { key: "platformFee", label: "平台费用", color: "#738791" },
   { key: "adCost", label: "广告费用", color: "#b3915d" },
   { key: "influencerFee", label: "达人费用", color: "#a97880" },

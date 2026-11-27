@@ -7,7 +7,7 @@ import { getCountry } from "@/lib/countries";
 import { formatMoney } from "@/lib/format";
 
 const COLORS = [
-  "#5c8272",
+  "#4c82ce",
   "#738791",
   "#b3915d",
   "#a97880",
@@ -60,7 +60,7 @@ export default function CostDonut() {
         </Pie>
         <Tooltip
           formatter={(v: number, n: string) => [formatMoney(v, sym), n]}
-          contentStyle={{ borderRadius: 8, border: "1px solid hsl(var(--border))" }}
+          contentStyle={{ borderRadius: 10, border: "1px solid hsl(var(--border))", background: "hsl(var(--popover))", color: "hsl(var(--popover-foreground))" }}
         />
         <Legend wrapperStyle={{ fontSize: 12 }} iconType="circle" />
       </PieChart>

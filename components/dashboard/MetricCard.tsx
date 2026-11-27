@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { Card, CardContent } from "@/components/ui/card";
 import { useCountUp } from "@/hooks/useCountUp";
 import { cn } from "@/lib/utils";
 
@@ -12,6 +11,8 @@ interface MetricCardProps {
   hint?: string;
   tone?: "default" | "success" | "warning" | "danger" | "primary";
   emphasize?: boolean;
+  className?: string;
+  secondary?: (n: number) => string;
 }
 
 const toneClass: Record<NonNullable<MetricCardProps["tone"]>, string> = {
@@ -22,24 +23,18 @@ const toneClass: Record<NonNullable<MetricCardProps["tone"]>, string> = {
   danger: "text-[hsl(var(--danger))]",
 };
 
-export function MetricCard({ label, value, format, hint, tone = "default", emphasize }: MetricCardProps) {
+export function MetricCard({ label, value, format, hint, tone = "default", emphasize, className, secondary }: MetricCardProps) {
   const animated = useCountUp(value);
   return (
-    <Card className={cn("animate-fade-in min-w-0", emphasize && "border-primary/35")}>
-      <CardContent className="p-4">
-        <p className="text-xs font-medium text-muted-foreground">{label}</p>
-        <p
-          className={cn(
-            "mt-1 tabular-nums font-semibold break-words leading-tight",
-            emphasize ? "text-xl sm:text-2xl" : "text-lg sm:text-xl",
-            toneClass[tone],
-          )}
-          title={format(animated)}
-        >
+    <div className={cn("min-w-0 px-4 py-3", className)}>
+      <dt className="text-xs font-medium text-muted-foreground">{label}</dt>
+      <dd className="mt-1 tabular-nums">
+        <span className={cn("block font-semibold leading-tight tracking-tight [overflow-wrap:anywhere]", emphasize ? "text-[clamp(1.65rem,3vw,2.35rem)]" : "text-base", toneClass[tone])}>
           {format(animated)}
-        </p>
-        {hint ? <p className="mt-1 text-[11px] break-words text-muted-foreground">{hint}</p> : null}
-      </CardContent>
-    </Card>
+        </span>
+        {secondary ? <span className="mt-1 block text-xs text-muted-foreground [overflow-wrap:anywhere]">{secondary(animated)}</span> : null}
+        {hint ? <span className="mt-1 block text-xs leading-relaxed text-muted-foreground">{hint}</span> : null}
+      </dd>
+    </div>
   );
 }

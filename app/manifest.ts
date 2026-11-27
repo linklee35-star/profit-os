@@ -12,8 +12,8 @@ export default function manifest(): MetadataRoute.Manifest {
     scope: BASE,
     display: "standalone",
     display_override: ["standalone", "minimal-ui"],
-    background_color: "#121714",
-    theme_color: "#121714",
+    background_color: "#f5f6fa",
+    theme_color: "#f5f6fa",
     orientation: "any",
     id: "profit-os-v2",
     icons: [

@@ -23,24 +23,26 @@ export function MobileResultBar() {
   return (
     <div
       className={cn(
-        "fixed bottom-0 left-0 right-0 z-40 xl:hidden",
-        "border-t border-border bg-card/95 backdrop-blur",
+        "fixed bottom-0 left-0 right-0 z-40 lg:hidden",
+        "border-t border-border bg-card/95 backdrop-blur-xl",
         "pb-[env(safe-area-inset-bottom,0px)]",
       )}
     >
       <button
         type="button"
         onClick={scrollToResults}
+        aria-controls="result-panel"
         className="flex w-full items-center justify-between px-4 py-2.5 text-left active:bg-accent/50"
       >
         <div className="min-w-0 flex-1">
-          <p className="text-[11px] text-muted-foreground">净利润</p>
+          <p className="text-[11px] text-muted-foreground">单件净利润</p>
           <p
             className={cn(
-              "text-base font-bold tabular-nums",
+              "text-base font-semibold tabular-nums",
               r.netProfit >= 0
                 ? "text-[hsl(var(--success))]"
                 : "text-[hsl(var(--danger))]",
+              "[overflow-wrap:anywhere]",
             )}
           >
             {formatThbWithRmb(r.netProfit, rate, sym)}

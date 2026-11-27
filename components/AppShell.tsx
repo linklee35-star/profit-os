@@ -53,7 +53,7 @@ const markets = feeData.map(({ platform, country }) => ({
 function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
   return (
-    <nav className="flex gap-1 whitespace-nowrap md:flex-col">
+    <nav aria-label="主导航" className="flex gap-1 whitespace-nowrap md:flex-col">
       {NAV.map((item) => {
         const active = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
         const Icon = item.icon;
@@ -62,6 +62,7 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
             key={item.href}
             href={item.href}
             onClick={onNavigate}
+            aria-current={active ? "page" : undefined}
             className={cn(
               "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
               active
@@ -87,7 +88,7 @@ function ModeToggle() {
         onClick={() => setMode("quick")}
         className={cn(
           "rounded-md px-2.5 py-1 transition-colors",
-          mode === "quick" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground",
+          mode === "quick" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground",
         )}
       >
         快速估算
@@ -96,7 +97,7 @@ function ModeToggle() {
         onClick={() => setMode("real")}
         className={cn(
           "rounded-md px-2.5 py-1 transition-colors",
-          mode === "real" ? "bg-background text-foreground shadow-sm" : "text-muted-foreground",
+          mode === "real" ? "bg-card text-foreground shadow-sm" : "text-muted-foreground",
         )}
       >
         真实利润
@@ -119,7 +120,7 @@ function MarketSelect() {
         if (market) setMarket(market.country.code, market.platform);
       }}
     >
-      <SelectTrigger className="h-8 w-[182px] gap-2 bg-card text-xs shadow-none" aria-label="销售站点">
+      <SelectTrigger className="h-9 w-full gap-2 border-border bg-card px-3 text-sm font-medium shadow-none lg:w-[205px]" aria-label="销售站点">
         <SelectValue placeholder="选择销售站点">
           {selected ? `${getPlatform(platformId).name} · ${selected.country.name}站` : undefined}
         </SelectValue>
@@ -214,9 +215,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <PwaRegister />
       <InstallBanner />
       {/* 侧边栏（桌面端） */}
-      <aside className="hidden w-56 shrink-0 flex-col border-r border-border bg-card p-4 md:flex">
+      <aside className="hidden w-52 shrink-0 flex-col border-r border-border bg-card p-4 md:flex">
         <div className="mb-6 flex items-center gap-2 px-1">
-          <div className="flex h-8 w-8 items-center justify-center rounded-md border bg-accent text-accent-foreground">
+          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-primary-foreground">
             <Calculator className="h-4 w-4" aria-hidden="true" />
           </div>
           <div className="leading-tight">
@@ -229,16 +230,18 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
       {/* 主区域 */}
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-30 flex flex-wrap items-center gap-2.5 border-b border-border bg-card px-4 py-2.5">
-          <div className="flex items-center gap-2 md:hidden">
-            <div className="flex h-7 w-7 items-center justify-center rounded-md border bg-accent text-accent-foreground">
-              <Calculator className="h-4 w-4" aria-hidden="true" />
-            </div>
+        <header className="sticky top-0 z-30 flex flex-wrap items-center gap-x-2.5 gap-y-2 border-b border-border bg-card/95 px-4 py-2.5 backdrop-blur-xl lg:flex-nowrap lg:gap-x-4 lg:px-6">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary text-primary-foreground md:hidden">
+            <Calculator className="h-4 w-4" aria-hidden="true" />
           </div>
-          <MarketSelect />
-          <ModeToggle />
-          <div className="ml-auto flex items-center gap-2">
+          <div className="min-w-0 flex-1 lg:flex-none">
+            <MarketSelect />
+          </div>
+          <div className="order-last flex min-w-0 flex-1 basis-full items-center justify-between gap-2 lg:order-none lg:basis-auto">
+            <ModeToggle />
             <RateIndicator />
+          </div>
+          <div className="flex shrink-0 items-center gap-0.5 border-l border-border pl-1.5">
             <ShareButton />
             <ThemeToggle />
           </div>
@@ -249,7 +252,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <NavLinks />
         </div>
 
-        <main className="flex-1 p-4 sm:p-6">{children}</main>
+        <main className="mx-auto w-full max-w-[1560px] flex-1 p-4 sm:p-6 lg:px-7">{children}</main>
       </div>
     </div>
   );

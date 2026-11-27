@@ -16,7 +16,7 @@
 
 ## 安装依赖
 
-已在项目根目录装好（`npm install` 会带上）：
+安装 Node.js 20 或以上版本，在项目目录运行 `npm ci`。其中会安装：
 - `@modelcontextprotocol/server` — MCP server SDK v2
 - `@modelcontextprotocol/client` — 仅冒烟测试用
 - `tsx` — 直接跑 TypeScript，无需编译
@@ -29,20 +29,18 @@
 {
   "mcpServers": {
     "margin-os": {
-      "command": "npx",
+      "command": "node",
       "args": [
-        "tsx",
-        "C:/Users/bl162/WorkBuddy/2026-07-09-18-02-59/tiktok-profit-os/mcp/server.ts"
+        "node_modules/tsx/dist/cli.mjs",
+        "mcp/server.ts"
       ],
-      "cwd": "C:/Users/bl162/WorkBuddy/2026-07-09-18-02-59/tiktok-profit-os"
+      "cwd": "/absolute/path/to/profit-os"
     }
   }
 }
 ```
 
-> Windows 上若 `npx` 不在 PATH，用绝对路径：
-> `command` 填 `C:/Users/bl162/.workbuddy-ai/binaries/node/versions/22.22.2-6/node.exe`，
-> `args` 填 `["node_modules/tsx/dist/cli.mjs", "mcp/server.ts"]`。
+> 将 `cwd` 改成你的项目绝对路径。Windows 可以写 `D:/projects/profit-os`。如果客户端找不到 `node`，在 `command` 使用 `node.exe` 的绝对路径。
 
 配好后重启 agent，让它列一下工具，应该看到 6 个。
 
