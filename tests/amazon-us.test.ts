@@ -74,6 +74,6 @@ describe("Amazon 美国站接线", () => {
     expect(us.commissionRate).toBe(15);
     const th = applyCountryDefaults(us, getCountry("TH"), "tiktok-shop");
     expect(th.commissionRate).toBe(7.49);
-    expect(th.currencySymbol ?? getCountry("TH").currencySymbol).toBe("฿");
+    expect(th.rate).toBe(5);
   });
 });
