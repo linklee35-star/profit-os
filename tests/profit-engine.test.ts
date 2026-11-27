@@ -2,8 +2,9 @@ import { describe, it, expect } from "vitest";
 import { calculateProfit } from "@/lib/profit-engine";
 import { computeAdCost } from "@/lib/fee-engine";
 import { amortize } from "@/lib/calculations";
-import { DEFAULT_INPUT } from "@/lib/schema";
-import { applyCategory } from "@/lib/categories";
+import { buildInitialInput, DEFAULT_INPUT, deriveLogistics } from "@/lib/schema";
+import { applyCategory, CATEGORIES } from "@/lib/categories";
+import { feeData } from "@/lib/fees";
 import type { ProfitInput } from "@/lib/types";
 
 function base(overrides: Partial<ProfitInput> = {}): ProfitInput {
@@ -207,12 +208,33 @@ describe("VAT 含税切换", () => {
 });
 
 describe("品类模板", () => {
-  it("应用宠物电器模板套用电子类费率与真实物流", () => {
-    const input = applyCategory(base({ purchaseCost: 100 }), "pet_electronic");
-    expect(input.commissionRate).toBe(6.955);
-    expect(input.growthRate).toBe(6.96);
-    expect(input.weightGrams).toBe(800);
-    expect(input.shippingRatePerKg).toBe(24);
+  it("在每个站点仅填入示例重量和包装，保留报价、费率、税务和运费模式", () => {
+    expect(new Set(CATEGORIES.map(({ id }) => id)).size).toBe(CATEGORIES.length);
+    for (const { country, platform } of feeData) {
+      const input: ProfitInput = {
+        ...buildInitialInput(country, platform),
+        price: 49,
+        shippingRatePerKg: 33,
+        shippingHandling: 6,
+        intlShipping: 17,
+        logisticsMode: "manual",
+        dutyEnabled: true,
+      };
+      for (const category of CATEGORIES) {
+        const result = applyCategory(input, category.id);
+        expect(result).toEqual({ ...input, ...category.sample, category: category.id });
+        expect(deriveLogistics(result).intlShipping).toBe(17);
+      }
+    }
+  });
+
+  it("按重量计费时使用模板重量与当前货代报价，通用基准保留当前数值", () => {
+    const input = base({ logisticsMode: "weight", shippingRatePerKg: 30, shippingHandling: 3 });
+    const camping = applyCategory(input, "outdoor_camping");
+    expect(camping.weightGrams).toBe(1500);
+    expect(camping.packagingCost).toBe(4);
+    expect(deriveLogistics(camping).intlShipping).toBe(48);
+    expect(applyCategory(camping, "default")).toEqual({ ...camping, category: "default" });
   });
 });
 

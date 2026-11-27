@@ -268,13 +268,12 @@ export interface SkuItem {
   createdAt: number;
 }
 
-/** 品类模板：选择后自动预填一组真实参考费率 */
+/** 品类试算模板，示例值可按商品实际情况修改。 */
 export interface CategoryTemplate {
   id: string;
   name: string;
   desc: string;
-  /** 应用到输入对象上的字段覆盖 */
-  patch: Partial<ProfitInput>;
+  sample?: Pick<ProfitInput, "weightGrams" | "packagingCost">;
 }
 
 /** 批测 Excel 行 */

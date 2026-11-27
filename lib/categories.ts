@@ -1,93 +1,75 @@
 import type { CategoryTemplate, ProfitInput } from "./types";
 
-// ============================================================================
-// 品类模板 —— 选择后一键预填「最新真实参考费率」
-// 物流单价基于 2026 年中国→泰国跨境电商货代报价
-// 平台费基于 TikTok 泰国 2026-05-06 后规则（非Mall 通用）
-// ============================================================================
+export const DEFAULT_CATEGORY: CategoryTemplate = {
+  id: "default",
+  name: "通用基准",
+  desc: "保留当前测算参数",
+};
 
-export const CATEGORIES: CategoryTemplate[] = [
+export const CATEGORY_GROUPS: { name: string; templates: CategoryTemplate[] }[] = [
   {
-    id: "default",
-    name: "通用基准",
-    desc: "不套用特定品类，使用默认参数",
-    patch: {},
+    name: "户外运动",
+    templates: [
+      { id: "outdoor_light", name: "户外轻小件", desc: "登山扣、收纳袋、绑带", sample: { weightGrams: 180, packagingCost: 1 } },
+      { id: "outdoor_camping", name: "露营装备", desc: "野餐垫、折叠收纳箱", sample: { weightGrams: 1500, packagingCost: 4 } },
+      { id: "outdoor_garden", name: "园艺与庭院", desc: "修枝剪、小型浇灌套装", sample: { weightGrams: 750, packagingCost: 3 } },
+      { id: "outdoor_fitness", name: "运动健身配件", desc: "弹力带、跳绳、护具", sample: { weightGrams: 450, packagingCost: 2 } },
+    ],
   },
   {
-    id: "pet_light",
-    name: "宠物轻小件",
-    desc: "玩具 / 服饰 / 牵引绳 / 项圈等，约 200g",
-    patch: {
-      weightGrams: 200,
-      shippingRatePerKg: 22,
-      shippingHandling: 2,
-      commissionRate: 7.49,
-      transactionRate: 3.21,
-      growthRate: 8.03,
-      returnRate: 8,
-      influencerCommissionRate: 12,
-      dutyCategory: "general",
-      dutyRate: 10,
-    },
+    name: "家居日用",
+    templates: [
+      { id: "home_organizer", name: "家居收纳", desc: "收纳盒、抽屉分隔件", sample: { weightGrams: 650, packagingCost: 2.5 } },
+      { id: "home_kitchen", name: "厨房餐具", desc: "餐具套装、玻璃杯、厨房小工具", sample: { weightGrams: 700, packagingCost: 4 } },
+      { id: "home_textile", name: "家纺软装", desc: "抱枕套、桌布、小地垫", sample: { weightGrams: 500, packagingCost: 1.5 } },
+    ],
   },
   {
-    id: "pet_heavy",
-    name: "宠物重货 / 用品",
-    desc: "食盆 / 猫砂盆 / 笼具 / 家具等，约 1.2kg",
-    patch: {
-      weightGrams: 1200,
-      shippingRatePerKg: 20,
-      shippingHandling: 3,
-      commissionRate: 7.49,
-      transactionRate: 3.21,
-      growthRate: 8.03,
-      returnRate: 3,
-      influencerCommissionRate: 10,
-      dutyCategory: "general",
-      dutyRate: 10,
-    },
+    name: "服饰配件",
+    templates: [
+      { id: "fashion_apparel", name: "服装 / 软配件", desc: "T 恤、帽子、围巾", sample: { weightGrams: 320, packagingCost: 1.5 } },
+      { id: "fashion_bags", name: "鞋包 / 箱包", desc: "单肩包、小背包、轻便鞋", sample: { weightGrams: 850, packagingCost: 3 } },
+    ],
   },
   {
-    id: "pet_consumable",
-    name: "宠物食品 / 消耗品",
-    desc: "零食 / 猫砂 / 湿粮等，约 1.5kg，复购高退货低",
-    patch: {
-      weightGrams: 1500,
-      shippingRatePerKg: 18,
-      shippingHandling: 3,
-      commissionRate: 7.49,
-      transactionRate: 3.21,
-      growthRate: 8.03,
-      returnRate: 2,
-      influencerCommissionRate: 8,
-      dutyCategory: "fashion",
-      dutyRate: 30,
-    },
+    name: "数码电子",
+    templates: [
+      { id: "electronics_accessory", name: "数码配件", desc: "手机壳、支架、数据线", sample: { weightGrams: 150, packagingCost: 1.5 } },
+      { id: "electronics_device", name: "小型电子设备", desc: "耳机、补光灯、便携风扇", sample: { weightGrams: 420, packagingCost: 3 } },
+    ],
   },
   {
-    id: "pet_electronic",
-    name: "宠物智能电器",
-    desc: "饮水机 / 喂食器 / 摄像头等带电敏感货，约 800g",
-    patch: {
-      weightGrams: 800,
-      shippingRatePerKg: 24,
-      shippingHandling: 3,
-      commissionRate: 6.955, // 电子类佣金 6.955%
-      transactionRate: 3.21,
-      growthRate: 6.96, // 电子类增长费 6.96%
-      returnRate: 5,
-      influencerCommissionRate: 15,
-      dutyCategory: "electronics",
-      dutyRate: 10,
-    },
+    name: "美妆个护",
+    templates: [
+      { id: "beauty_tools", name: "美妆工具", desc: "化妆刷、粉扑、美甲工具", sample: { weightGrams: 180, packagingCost: 1.5 } },
+      { id: "beauty_care", name: "个护消耗品", desc: "洗护小套装、护肤小样", sample: { weightGrams: 350, packagingCost: 3 } },
+    ],
+  },
+  {
+    name: "文具玩具",
+    templates: [
+      { id: "stationery_craft", name: "文具 / 手工材料", desc: "贴纸、笔记本、手工材料包", sample: { weightGrams: 250, packagingCost: 1.5 } },
+      { id: "toys_puzzle", name: "玩具 / 益智桌游", desc: "拼图、积木、卡牌套装", sample: { weightGrams: 600, packagingCost: 3 } },
+    ],
+  },
+  {
+    name: "宠物用品",
+    templates: [
+      { id: "pet_light", name: "宠物轻小件", desc: "玩具、牵引绳、项圈", sample: { weightGrams: 200, packagingCost: 1 } },
+      { id: "pet_heavy", name: "宠物重货 / 用品", desc: "食盆、猫砂盆、小型笼具", sample: { weightGrams: 1200, packagingCost: 3 } },
+      { id: "pet_consumable", name: "宠物食品 / 消耗品", desc: "零食、猫砂、湿粮", sample: { weightGrams: 1500, packagingCost: 2.5 } },
+      { id: "pet_electronic", name: "宠物智能电器", desc: "饮水机、喂食器、摄像头", sample: { weightGrams: 800, packagingCost: 4 } },
+    ],
   },
 ];
 
+export const CATEGORIES = [DEFAULT_CATEGORY, ...CATEGORY_GROUPS.flatMap((group) => group.templates)];
+
 export function getCategory(id: string): CategoryTemplate {
-  return CATEGORIES.find((c) => c.id === id) ?? CATEGORIES[0];
+  return CATEGORIES.find((category) => category.id === id) ?? DEFAULT_CATEGORY;
 }
 
 export function applyCategory(input: ProfitInput, id: string): ProfitInput {
-  const cat = getCategory(id);
-  return { ...input, ...cat.patch, category: id, logisticsMode: "weight" };
+  const category = getCategory(id);
+  return { ...input, ...category.sample, category: category.id };
 }
