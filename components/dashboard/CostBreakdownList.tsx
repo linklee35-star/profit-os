@@ -12,16 +12,16 @@ import type { CostBreakdown } from "@/lib/types";
 type BreakdownKey = keyof CostBreakdown;
 
 const ITEMS: { key: BreakdownKey; label: string; color: string }[] = [
-  { key: "productCost", label: "商品成本", color: "#6366f1" },
-  { key: "platformFee", label: "平台费用", color: "#0ea5e9" },
-  { key: "adCost", label: "广告费用", color: "#f59e0b" },
-  { key: "influencerFee", label: "达人费用", color: "#ec4899" },
-  { key: "taxCost", label: "税务成本", color: "#10b981" },
-  { key: "importDutyCost", label: "进口关税(买家付)", color: "#f97316" },
-  { key: "logisticsLoss", label: "物流损耗", color: "#ef4444" },
-  { key: "receivingCost", label: "收款成本", color: "#8b5cf6" },
-  { key: "warehouseCost", label: "仓储成本", color: "#14b8a6" },
-  { key: "teamCost", label: "团队成本", color: "#64748b" },
+  { key: "productCost", label: "商品成本", color: "#5c8272" },
+  { key: "platformFee", label: "平台费用", color: "#738791" },
+  { key: "adCost", label: "广告费用", color: "#b3915d" },
+  { key: "influencerFee", label: "达人费用", color: "#a97880" },
+  { key: "taxCost", label: "税务成本", color: "#82a085" },
+  { key: "importDutyCost", label: "进口关税(买家付)", color: "#ab8056" },
+  { key: "logisticsLoss", label: "物流损耗", color: "#aa6755" },
+  { key: "receivingCost", label: "收款成本", color: "#8c819b" },
+  { key: "warehouseCost", label: "仓储成本", color: "#77a8a3" },
+  { key: "teamCost", label: "团队成本", color: "#87908b" },
 ];
 
 /**

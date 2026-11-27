@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { ProfitInput } from "@/lib/types";
+import type { CountryCode, PlatformId, ProfitInput } from "@/lib/types";
 import { buildInitialInput, applyCountryDefaults } from "@/lib/schema";
 import { applyCategory as applyCategoryFn } from "@/lib/categories";
 import { getCountry } from "@/lib/countries";
@@ -18,7 +18,7 @@ interface InputState {
   scenarios: Scenario[]; // 预设方案
   setField: <K extends keyof ProfitInput>(key: K, value: ProfitInput[K]) => void;
   setData: (data: ProfitInput) => void;
-  reset: () => void;
+  reset: (countryCode?: CountryCode, platformId?: PlatformId) => void;
   applyCategory: (categoryId: string) => void;
   applyCountry: (code: ProfitInput["category"] extends never ? string : string) => void;
   saveScenario: (name: string) => void;
@@ -38,7 +38,8 @@ export const useInputStore = create<InputState>()(
       setField: (key, value) =>
         set((s) => ({ data: { ...s.data, [key]: value }, lastSavedAt: Date.now() })),
       setData: (data) => set({ data, lastSavedAt: Date.now() }),
-      reset: () => set({ data: buildInitialInput("TH"), lastSavedAt: Date.now() }),
+      reset: (countryCode = "TH", platformId) =>
+        set({ data: buildInitialInput(countryCode, platformId), lastSavedAt: Date.now() }),
       applyCategory: (categoryId) =>
         set((s) => ({
           data: applyCategoryFn(s.data, categoryId),

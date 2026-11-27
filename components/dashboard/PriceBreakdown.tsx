@@ -15,15 +15,15 @@ import { getCountry } from "@/lib/countries";
 import { formatMoney } from "@/lib/format";
 
 const COLOR: Record<string, string> = {
-  商品成本: "#6366f1",
-  平台费用: "#0ea5e9",
-  广告费用: "#f59e0b",
-  达人费用: "#ec4899",
-  税务成本: "#10b981",
-  物流损耗: "#ef4444",
-  收款成本: "#8b5cf6",
-  仓储成本: "#14b8a6",
-  团队成本: "#64748b",
+  商品成本: "#5c8272",
+  平台费用: "#738791",
+  广告费用: "#b3915d",
+  达人费用: "#a97880",
+  税务成本: "#82a085",
+  物流损耗: "#aa6755",
+  收款成本: "#8c819b",
+  仓储成本: "#77a8a3",
+  团队成本: "#87908b",
 };
 
 const ORDER = [

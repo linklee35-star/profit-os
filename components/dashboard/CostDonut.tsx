@@ -7,15 +7,15 @@ import { getCountry } from "@/lib/countries";
 import { formatMoney } from "@/lib/format";
 
 const COLORS = [
-  "#6366f1",
-  "#0ea5e9",
-  "#f59e0b",
-  "#ec4899",
-  "#10b981",
-  "#ef4444",
-  "#8b5cf6",
-  "#14b8a6",
-  "#64748b",
+  "#5c8272",
+  "#738791",
+  "#b3915d",
+  "#a97880",
+  "#82a085",
+  "#aa6755",
+  "#8c819b",
+  "#77a8a3",
+  "#87908b",
 ];
 
 export default function CostDonut() {

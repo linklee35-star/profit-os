@@ -45,6 +45,7 @@ export function ExchangeRateControl() {
     setError(null);
     try {
       const r = await fetchRate(rateProvider, country.currency);
+      if (useSettingsStore.getState().countryCode !== country.code) return;
       // 用本地刷新时刻作为「更新时间」，用户能直观看到刚刚已更新
       setAutoRate(r.rate, new Date().toISOString());
     } catch (e) {
@@ -52,15 +53,15 @@ export function ExchangeRateControl() {
     } finally {
       setLoading(false);
     }
-  }, [rateProvider, country.currency, setAutoRate]);
+  }, [rateProvider, country.code, country.currency, setAutoRate]);
 
-  // 首次进入：未获取过 或 数据已过期 → 立即拉取
+  // 进入设置或切换站点后，刷新缺失或过期的自动汇率。
   React.useEffect(() => {
-    if (rateSource === "auto" && (autoRate == null || isRateStale(autoRateUpdatedAt))) {
+    const saved = useSettingsStore.getState();
+    if (rateSource === "auto" && (saved.autoRate == null || isRateStale(saved.autoRateUpdatedAt))) {
       refresh();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [rateSource, refresh]);
 
   // 后台定时刷新：超过 30 分钟未更新则静默重新拉取（stale-while-revalidate，不阻塞 UI）
   React.useEffect(() => {
@@ -69,8 +70,7 @@ export function ExchangeRateControl() {
       if (isRateStale(autoRateUpdatedAt)) refresh();
     }, RATE_MAX_AGE_MS);
     return () => clearInterval(id);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rateSource, autoRateUpdatedAt]);
+  }, [rateSource, autoRateUpdatedAt, refresh]);
 
   const effective = rateSource === "custom" ? manualRate : autoRate ?? country.defaultRate;
 

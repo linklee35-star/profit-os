@@ -25,7 +25,7 @@ const toneClass: Record<NonNullable<MetricCardProps["tone"]>, string> = {
 export function MetricCard({ label, value, format, hint, tone = "default", emphasize }: MetricCardProps) {
   const animated = useCountUp(value);
   return (
-    <Card className={cn("animate-fade-in min-w-0", emphasize && "border-primary/30 bg-primary/5")}>
+    <Card className={cn("animate-fade-in min-w-0", emphasize && "border-primary/35")}>
       <CardContent className="p-4">
         <p className="text-xs font-medium text-muted-foreground">{label}</p>
         <p

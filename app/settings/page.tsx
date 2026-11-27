@@ -6,8 +6,9 @@ import { ExchangeRateControl } from "@/components/ExchangeRateControl";
 import { useInputStore } from "@/store/useInputStore";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { useSkuStore } from "@/store/useSkuStore";
-import { getCountry, countries } from "@/lib/countries";
-import { getPlatformFees } from "@/lib/fees";
+import { getCountry } from "@/lib/countries";
+import { feeData } from "@/lib/fees";
+import { getPlatform } from "@/lib/platforms";
 import { downloadText, pickFile, readFileText } from "@/lib/storage";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -25,6 +26,7 @@ interface ConfigFile {
 
 export default function SettingsPage() {
   const countryCode = useSettingsStore((s) => s.countryCode);
+  const platformId = useSettingsStore((s) => s.platformId);
   const country = getCountry(countryCode);
 
   const exportConfig = () => {
@@ -67,7 +69,7 @@ export default function SettingsPage() {
 
   const resetAll = () => {
     if (!confirm("确认清空全部数据（输入 / 设置 / SKU）？此操作不可撤销。")) return;
-    useInputStore.getState().reset();
+    useInputStore.getState().reset(countryCode, platformId);
     useSkuStore.getState().clear();
     useSettingsStore.getState().setMode("quick");
   };
@@ -76,7 +78,7 @@ export default function SettingsPage() {
     <div className="mx-auto max-w-3xl space-y-6">
       <div>
         <h1 className="text-xl font-semibold tracking-tight">设置</h1>
-        <p className="text-sm text-muted-foreground">汇率、国家配置与数据管理。</p>
+        <p className="text-sm text-muted-foreground">汇率、销售站点与数据管理。</p>
       </div>
 
       <Card>
@@ -94,30 +96,27 @@ export default function SettingsPage() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base">
-            <Settings2 className="h-4 w-4" /> 国家配置
+            <Settings2 className="h-4 w-4" /> 支持的销售站点
           </CardTitle>
-          <CardDescription>新增国家只需扩展国家配置文件，核心引擎无需改动。</CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="flex flex-wrap gap-2">
-            {countries.map((c) => (
-              <div
-                key={c.code}
-                className={`rounded-lg border px-3 py-2 text-sm ${
-                  c.code === countryCode ? "border-primary bg-primary/5" : "border-border"
-                }`}
-              >
-                <p className="font-medium">
-                  {c.flag} {c.name}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  {(() => {
-                    const fees = getPlatformFees("tiktok-shop", c.code);
-                    return `佣金 ${fees ? fees.values.commission : "—"}% · VAT ${c.vat}% · 默认汇率 ${c.defaultRate}`;
-                  })()}
-                </p>
-              </div>
-            ))}
+            {feeData.map((fee) => {
+              const marketCountry = getCountry(fee.country);
+              const platform = getPlatform(fee.platform);
+              const active = fee.country === countryCode && fee.platform === platformId;
+              return (
+                <div
+                  key={`${fee.platform}:${fee.country}`}
+                  className={`rounded-lg border px-3 py-2 text-sm ${active ? "border-primary bg-accent" : "border-border"}`}
+                >
+                  <p className="font-medium">{platform.name} · {marketCountry.name}站</p>
+                  <p className="text-xs text-muted-foreground">
+                    {marketCountry.currency} · {marketCountry.taxName ?? "VAT"} {marketCountry.vat}%
+                  </p>
+                </div>
+              );
+            })}
           </div>
         </CardContent>
       </Card>

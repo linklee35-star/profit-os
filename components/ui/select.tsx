@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 
 const Select = SelectPrimitive.Root;
 const SelectGroup = SelectPrimitive.Group;
+const SelectLabel = SelectPrimitive.Label;
 const SelectValue = SelectPrimitive.Value;
 
 const SelectTrigger = React.forwardRef<
@@ -88,6 +89,7 @@ SelectItem.displayName = SelectPrimitive.Item.displayName;
 export {
   Select,
   SelectGroup,
+  SelectLabel,
   SelectValue,
   SelectTrigger,
   SelectContent,

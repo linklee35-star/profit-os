@@ -1,6 +1,7 @@
 "use client";
 
 import { useInputStore } from "@/store/useInputStore";
+import { useSettingsStore } from "@/store/useSettingsStore";
 import { formatTime } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import { RotateCcw } from "lucide-react";
@@ -18,7 +19,10 @@ export function AutosaveIndicator() {
         variant="ghost"
         size="sm"
         onClick={() => {
-          if (confirm("恢复为默认参数？当前输入将被清空。")) reset();
+          if (confirm("恢复为默认参数？当前输入将被清空。")) {
+            const { countryCode, platformId } = useSettingsStore.getState();
+            reset(countryCode, platformId);
+          }
         }}
         title="恢复默认"
       >

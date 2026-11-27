@@ -47,6 +47,7 @@ export default function DashboardPage() {
   const resultRef = React.useRef<HTMLDivElement>(null);
   const setData = useInputStore((s) => s.setData);
   const countryCode = useSettingsStore((s) => s.countryCode);
+  const platformId = useSettingsStore((s) => s.platformId);
 
   return (
     <div className="space-y-6 pb-16 xl:pb-0">
@@ -70,7 +71,7 @@ export default function DashboardPage() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setData(buildInitialInput(countryCode))}
+                onClick={() => setData(buildInitialInput(countryCode, platformId))}
               >
                 载入示例
               </Button>

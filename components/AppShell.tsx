@@ -11,16 +11,15 @@ import {
   Settings,
   Sun,
   Moon,
-  TrendingUp,
-  Sparkles,
+  Calculator,
 } from "lucide-react";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { useInputStore } from "@/store/useInputStore";
 import { useSkuStore } from "@/store/useSkuStore";
 import { useEffectiveRate } from "@/hooks/useProfit";
-import { countries, getCountry } from "@/lib/countries";
-import { getPlatformsForCountry } from "@/lib/fees";
-import { getPlatform } from "@/lib/platforms";
+import { getCountry } from "@/lib/countries";
+import { feeData } from "@/lib/fees";
+import { getPlatform, platforms } from "@/lib/platforms";
 import { formatRate } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { PwaRegister } from "@/components/PwaRegister";
@@ -30,7 +29,9 @@ import { decodeShareState, readShareToken, stripShareParam } from "@/lib/share";
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -43,10 +44,16 @@ const NAV = [
   { href: "/settings", label: "设置", icon: Settings },
 ];
 
+const markets = feeData.map(({ platform, country }) => ({
+  value: `${platform}:${country}`,
+  platform,
+  country: getCountry(country),
+}));
+
 function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
   return (
-    <nav className="flex flex-col gap-1">
+    <nav className="flex gap-1 whitespace-nowrap md:flex-col">
       {NAV.map((item) => {
         const active = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
         const Icon = item.icon;
@@ -58,7 +65,7 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
             className={cn(
               "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
               active
-                ? "bg-primary/10 text-primary"
+                ? "bg-accent text-accent-foreground"
                 : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
             )}
           >
@@ -98,41 +105,40 @@ function ModeToggle() {
   );
 }
 
-function CountrySelect() {
-  const countryCode = useSettingsStore((s) => s.countryCode);
-  const setCountry = useSettingsStore((s) => s.setCountry);
-  return (
-    <Select value={countryCode} onValueChange={(v) => setCountry(v as typeof countryCode)}>
-      <SelectTrigger className="h-8 w-[120px] text-xs">
-        <SelectValue />
-      </SelectTrigger>
-      <SelectContent>
-        {countries.map((c) => (
-          <SelectItem key={c.code} value={c.code}>
-            {c.flag} {c.name}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
-  );
-}
-
-function PlatformSelect() {
+function MarketSelect() {
   const platformId = useSettingsStore((s) => s.platformId);
   const countryCode = useSettingsStore((s) => s.countryCode);
-  const setPlatform = useSettingsStore((s) => s.setPlatform);
-  // 只列出当前国家有费率数据的平台（如美国→Amazon，泰国→TikTok Shop/Shopee）
-  const available = getPlatformsForCountry(countryCode).map((id) => getPlatform(id));
+  const setMarket = useSettingsStore((s) => s.setMarket);
+  const selected = markets.find((m) => m.platform === platformId && m.country.code === countryCode);
+
   return (
-    <Select value={platformId} onValueChange={(v) => setPlatform(v as typeof platformId)}>
-      <SelectTrigger className="h-8 w-[132px] text-xs" aria-label="平台">
-        <SelectValue />
+    <Select
+      value={selected?.value ?? ""}
+      onValueChange={(value) => {
+        const market = markets.find((m) => m.value === value);
+        if (market) setMarket(market.country.code, market.platform);
+      }}
+    >
+      <SelectTrigger className="h-8 w-[182px] gap-2 bg-card text-xs shadow-none" aria-label="销售站点">
+        <SelectValue placeholder="选择销售站点">
+          {selected ? `${getPlatform(platformId).name} · ${selected.country.name}站` : undefined}
+        </SelectValue>
       </SelectTrigger>
-      <SelectContent>
-        {available.map((p) => (
-          <SelectItem key={p.id} value={p.id}>
-            {p.name}
-          </SelectItem>
+      <SelectContent align="start" className="w-[230px]">
+        {platforms.map((platform) => (
+          <SelectGroup key={platform.id} className="border-b border-border px-1 py-1.5 last:border-0">
+            <SelectLabel className="px-2 pb-1 text-xs font-semibold text-muted-foreground">
+              {platform.name}
+            </SelectLabel>
+            {markets.filter((market) => market.platform === platform.id).map(({ value, country }) => (
+              <SelectItem key={value} value={value} textValue={`${platform.name} ${country.name}站`}>
+                <span className="flex items-center gap-2">
+                  {country.name}站
+                  <span className="text-xs tabular-nums text-muted-foreground">{country.currency}</span>
+                </span>
+              </SelectItem>
+            ))}
+          </SelectGroup>
         ))}
       </SelectContent>
     </Select>
@@ -196,9 +202,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         // 分享链接优先于本地存储：对方点开链接应该看到链接里的数字
         const decoded = decodeShareState(readShareToken(window.location.search));
         if (!decoded) return;
-        const settings = useSettingsStore.getState();
-        settings.setPlatform(decoded.platformId);
-        settings.setCountry(decoded.countryCode);
+        if (!useSettingsStore.getState().setMarket(decoded.countryCode, decoded.platformId)) return;
         useInputStore.getState().setData(decoded.data);
         // 应用后清掉地址栏参数，否则用户改完数字一刷新又被链接覆盖
         window.history.replaceState({}, "", stripShareParam(window.location.href));
@@ -210,10 +214,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <PwaRegister />
       <InstallBanner />
       {/* 侧边栏（桌面端） */}
-      <aside className="hidden w-56 shrink-0 flex-col border-r border-border bg-card/40 p-4 md:flex">
+      <aside className="hidden w-56 shrink-0 flex-col border-r border-border bg-card p-4 md:flex">
         <div className="mb-6 flex items-center gap-2 px-1">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-            <Sparkles className="h-4 w-4" />
+          <div className="flex h-8 w-8 items-center justify-center rounded-md border bg-accent text-accent-foreground">
+            <Calculator className="h-4 w-4" aria-hidden="true" />
           </div>
           <div className="leading-tight">
             <p className="text-sm font-semibold">Margin OS</p>
@@ -221,22 +225,18 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </div>
         </div>
         <NavLinks />
-        <div className="mt-auto flex items-center gap-1.5 px-1 text-[11px] text-muted-foreground">
-          <TrendingUp className="h-3.5 w-3.5" /> 跨境电商利润分析
-        </div>
       </aside>
 
       {/* 主区域 */}
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-30 flex flex-wrap items-center gap-2 border-b border-border bg-background/80 px-4 py-2.5 backdrop-blur">
+        <header className="sticky top-0 z-30 flex flex-wrap items-center gap-2.5 border-b border-border bg-card px-4 py-2.5">
           <div className="flex items-center gap-2 md:hidden">
-            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-              <Sparkles className="h-4 w-4" />
+            <div className="flex h-7 w-7 items-center justify-center rounded-md border bg-accent text-accent-foreground">
+              <Calculator className="h-4 w-4" aria-hidden="true" />
             </div>
           </div>
+          <MarketSelect />
           <ModeToggle />
-          <CountrySelect />
-          <PlatformSelect />
           <div className="ml-auto flex items-center gap-2">
             <RateIndicator />
             <ShareButton />
