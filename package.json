@@ -1,8 +1,8 @@
 {
-  "name": "tiktok-profit-os",
+  "name": "margin-os",
   "version": "1.0.0",
   "private": true,
-  "description": "TikTok Shop SEA Profit OS - 东南亚跨境电商利润分析系统",
+  "description": "Margin OS - 多平台跨境电商利润分析系统（TikTok Shop / Shopee / Amazon）",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

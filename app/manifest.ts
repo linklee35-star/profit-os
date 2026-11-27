@@ -5,9 +5,9 @@ const BASE = "/profit-os";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "TikTok Shop SEA Profit OS",
-    short_name: "Profit OS",
-    description: "东南亚跨境电商利润分析系统 · 关税 · 目标定价 · 实时汇率",
+    name: "Margin OS · 跨境电商利润分析",
+    short_name: "Margin OS",
+    description: "多平台跨境电商利润分析系统 · 关税 · 目标定价 · 实时汇率",
     start_url: `${BASE}/`,
     scope: BASE,
     display: "standalone",

@@ -1,4 +1,4 @@
-// Profit OS Service Worker —— 离线缓存 + 可安装
+// Margin OS Service Worker —— 离线缓存 + 可安装
 // 导航请求：网络优先（始终拿到最新 HTML，避免旧页面问题），失败回退缓存
 // 静态资源：缓存优先（更快加载）
 // 部署于 GitHub Pages 子路径 /profit-os，所有预缓存 URL 需带前缀

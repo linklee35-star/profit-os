@@ -1,14 +1,14 @@
-# TikTok Shop SEA Profit OS
+# Margin OS
 
 [![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0.html)
 [![CI](https://github.com/linklee35-star/profit-os/actions/workflows/ci.yml/badge.svg)](https://github.com/linklee35-star/profit-os/actions/workflows/ci.yml)
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue.svg)](https://www.typescriptlang.org/)
 [![Tests](https://img.shields.io/badge/tests-vitest-green.svg)](./tests)
 
-东南亚跨境电商利润分析系统 —— 帮助 TikTok Shop 卖家精确计算**真实利润、利润率、保本售价、保本 CPA、保本 ROAS**，并提供定价、广告、达人合作与成本管理决策工具。
+多平台跨境电商利润分析系统 —— 帮助跨境卖家精确计算**真实利润、利润率、保本售价、保本 CPA、保本 ROAS**，并提供定价、广告、达人合作与成本管理决策工具。
 
 > 不只是计算器，而是跨境电商运营决策系统。
-> 当前支持 **TikTok Shop（泰国 THB / 越南 VND / 马来西亚 MYR）+ Shopee（泰国 THB / 越南 VND）**，架构上已按 `模型 × 平台 × 国家 × 数据` 四层解耦——新增平台、新增市场、以及外贸报价模型（B2B），均无需改动核心引擎。
+> 当前支持 **TikTok Shop（泰国 THB / 越南 VND / 马来西亚 MYR）+ Shopee（泰国 THB / 越南 VND）+ Amazon（美国 USD）**，架构上已按 `模型 × 平台 × 国家 × 数据` 四层解耦——新增平台、新增市场、以及外贸报价模型（B2B），均无需改动核心引擎。
 
 🌐 **在线 Demo（PWA，可安装）**：https://linklee35-star.github.io/profit-os
 

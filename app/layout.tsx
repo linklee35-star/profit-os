@@ -5,14 +5,14 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AppShell } from "@/components/AppShell";
 
 export const metadata: Metadata = {
-  title: "TikTok Shop SEA Profit OS · 跨境电商利润分析",
+  title: "Margin OS · 跨境电商利润分析",
   description:
-    "专业级东南亚跨境电商利润分析系统：真实利润、保本售价、保本 CPA / ROAS、定价与广告测算。关税 · 目标定价 · 双币种 · 最新费率。",
+    "专业级跨境电商利润分析系统：真实利润、保本售价、保本 CPA / ROAS、定价与广告测算。多平台多市场 · 关税 · 目标定价 · 双币种 · 最新费率。",
   manifest: "/profit-os/manifest.webmanifest",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "Profit OS",
+    title: "Margin OS",
   },
   icons: {
     icon: [

@@ -216,7 +216,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <Sparkles className="h-4 w-4" />
           </div>
           <div className="leading-tight">
-            <p className="text-sm font-semibold">Profit OS</p>
+            <p className="text-sm font-semibold">Margin OS</p>
             <p className="text-[10px] text-muted-foreground">跨境电商利润分析</p>
           </div>
         </div>
