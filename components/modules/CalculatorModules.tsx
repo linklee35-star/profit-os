@@ -14,7 +14,7 @@ import { TargetPriceModule } from "./TargetPriceModule";
 
 export function CalculatorModules() {
   return (
-    <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
+    <div className="grid grid-cols-1 gap-4 xl:block xl:columns-2 xl:[&>*]:mb-4 xl:[&>*]:break-inside-avoid">
       <ProductCostModule />
       <SalesModule />
       <PlatformFeeModule />
