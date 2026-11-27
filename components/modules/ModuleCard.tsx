@@ -1,10 +1,16 @@
 "use client";
 
 import * as React from "react";
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, GripVertical } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { cn } from "@/lib/utils";
+
+export const ModuleSortHandleContext = React.createContext<Pick<
+  React.ButtonHTMLAttributes<HTMLButtonElement>,
+  "onPointerDown" | "onKeyDown"
+> | null>(null);
 
 interface ModuleCardProps {
   title: string;
@@ -38,6 +44,7 @@ export function ModuleCard({
   children,
 }: ModuleCardProps) {
   const mode = useSettingsStore((s) => s.mode);
+  const sortHandle = React.useContext(ModuleSortHandleContext);
   if (advanced && mode === "quick") return null;
 
   return (
@@ -52,6 +59,21 @@ export function ModuleCard({
             </span>
           ) : null}
           {right ? <div className="ml-auto">{right}</div> : null}
+          {sortHandle ? (
+            <Button
+              {...sortHandle}
+              type="button"
+              variant="ghost"
+              size="icon"
+              className={cn("shrink-0 cursor-grab touch-none select-none text-muted-foreground active:cursor-grabbing", !right && "ml-auto")}
+              data-module-title={title}
+              aria-label={`调整「${title}」的顺序`}
+              aria-keyshortcuts="ArrowUp ArrowDown"
+              title="拖动排序，或用 ↑ ↓ 移动"
+            >
+              <GripVertical aria-hidden="true" />
+            </Button>
+          ) : null}
         </div>
         {description ? <CardDescription>{description}</CardDescription> : null}
       </CardHeader>
